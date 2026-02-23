@@ -13,6 +13,9 @@ export async function POST(request: NextRequest) {
       customerName,
       customerPhone,
       customerNote,
+      userId,
+      userEmail,
+      userPhone,
     } = body;
 
     // Validate
@@ -33,6 +36,9 @@ export async function POST(request: NextRequest) {
       orderStatus: 'pending',
       customerName,
       customerPhone,
+      userId: userId || null,
+      userEmail: userEmail || null,
+      userPhone: userPhone || null,
       customerNote: customerNote || null,
       stripeSessionId: null,
       createdAt: Timestamp.now(),

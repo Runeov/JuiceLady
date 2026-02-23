@@ -20,6 +20,8 @@ Built with **Next.js 15**, **Tailwind CSS**, **Firebase Firestore**, and **Strip
 - **Orders**: Full order management with status workflow (Pending → Confirmed → Preparing → Ready → Completed)
 - **Menu**: Toggle item availability on/off in real-time
 - **Analytics**: Revenue charts, payment method breakdown, top-selling items
+- **Notifications**: Audible alert + optional desktop notifications for new orders
+- **Pending Badge**: Live count of active orders in the admin nav
 
 ### 🔧 Technical
 - Firebase Firestore for real-time data persistence
@@ -69,6 +71,10 @@ npm install
    - Collection: `orders` — Fields: `createdAt` (Descending)
    - Collection: `orders` — Fields: `createdAt` (Ascending), `createdAt` (Descending)
    - Collection: `menuItems` — Fields: `categoryId` (Ascending), `order` (Ascending)
+6. Deploy Firestore rules (public read, admin write):
+   ```bash
+   firebase deploy --only firestore:rules
+   ```
 
 ### 3. Stripe Setup
 
@@ -131,6 +137,45 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) for the customer menu.
 Open [http://localhost:3000/admin](http://localhost:3000/admin) for the admin panel.
+
+---
+
+## Admin Usage Guide
+
+### 1) Create an Admin Account
+The admin area is protected by Firebase Auth custom claims (`admin: true`).
+
+Use the included script to create a test admin user:
+
+```bash
+node scripts/create-auth-users.js
+```
+
+Default admin credentials from the script:
+- Email: `testadmin@test.th`
+- Password: `password`
+
+You can edit `scripts/create-auth-users.js` to add your own admin email/password or set claims for existing users.
+
+### 2) Sign In
+Go to `http://localhost:3000/account` and sign in with the admin user.
+
+### 3) Admin Dashboard (`/admin`)
+- See recent orders and key stats.
+- Orders marked **Completed** are visually crossed off (served).
+
+### 4) Orders Page (`/admin/orders`)
+- View all incoming orders.
+- Change status as drinks are prepared:
+  Pending → Confirmed → Preparing → Ready → Completed
+- Completed orders are crossed off.
+
+### 5) New Order Notifications
+- When a new order arrives, the admin will hear a short beep and see a toast.
+- Click **Enable** on the notification prompt to allow desktop notifications.
+
+### 6) Pending Badge
+- The Orders nav shows a live badge of active orders (Pending/Confirmed/Preparing/Ready).
 
 ---
 

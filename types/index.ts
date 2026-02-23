@@ -62,6 +62,9 @@ export interface Order {
   orderStatus: OrderStatus;
   customerName: string;
   customerPhone: string;
+  userId?: string;
+  userEmail?: string;
+  userPhone?: string;
   customerNote?: string;
   stripeSessionId?: string;
   createdAt: Date;

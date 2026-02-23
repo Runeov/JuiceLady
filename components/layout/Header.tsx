@@ -1,13 +1,16 @@
 'use client';
 
 import Link from 'next/link';
-import { ShoppingBag, Globe, Leaf } from 'lucide-react';
+import { ShoppingBag, Globe, Leaf, User } from 'lucide-react';
 import { useCartStore } from '@/lib/store';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/components/providers/AuthProvider';
 
 export default function Header() {
   const { language, toggleLanguage, getItemCount } = useCartStore();
   const itemCount = getItemCount();
+  const { user } = useAuth();
+  const userLabel = user?.displayName || user?.email || user?.phoneNumber;
 
   return (
     <header className="sticky top-0 z-50 glass border-b border-cameron-200/30">
@@ -37,6 +40,17 @@ export default function Header() {
             <Globe className="w-3.5 h-3.5" />
             <span>{language === 'th' ? 'EN' : 'TH'}</span>
           </button>
+
+          {/* Account */}
+          <Link
+            href="/account"
+            className="flex items-center gap-2 px-3 py-2 rounded-full bg-cameron-50 hover:bg-cameron-100 text-cameron-700 text-sm font-medium transition-colors"
+          >
+            <User className="w-4 h-4" />
+            <span className="hidden sm:inline">
+              {userLabel ? (language === 'th' ? 'บัญชี' : 'Account') : language === 'th' ? 'เข้าสู่ระบบ' : 'Sign in'}
+            </span>
+          </Link>
 
           {/* Cart */}
           <Link

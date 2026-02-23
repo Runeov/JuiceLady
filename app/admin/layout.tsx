@@ -4,13 +4,17 @@ import {
   ClipboardList,
   UtensilsCrossed,
   BarChart3,
+  Users,
   Leaf,
   ArrowLeft,
 } from 'lucide-react';
+import AdminGuard from '@/components/admin/AdminGuard';
+import AdminPendingBadge from '@/components/admin/AdminPendingBadge';
 
 const navItems = [
   { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/admin/orders', label: 'Orders', icon: ClipboardList },
+  { href: '/admin/customers', label: 'Customers', icon: Users },
   { href: '/admin/menu', label: 'Menu', icon: UtensilsCrossed },
   { href: '/admin/analytics', label: 'Analytics', icon: BarChart3 },
 ];
@@ -44,7 +48,10 @@ export default function AdminLayout({
               className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-cameron-200 hover:text-white hover:bg-cameron-800 transition-colors"
             >
               <item.icon className="w-4 h-4" />
-              {item.label}
+              <span className="flex items-center">
+                {item.label}
+                {item.href === '/admin/orders' && <AdminPendingBadge className="ml-2" />}
+              </span>
             </Link>
           ))}
         </nav>
@@ -73,7 +80,14 @@ export default function AdminLayout({
               href={item.href}
               className="p-2 rounded-lg hover:bg-cameron-800 transition-colors"
             >
-              <item.icon className="w-4 h-4 text-cameron-200" />
+              <span className="relative inline-flex">
+                <item.icon className="w-4 h-4 text-cameron-200" />
+                {item.href === '/admin/orders' && (
+                  <span className="absolute -top-1 -right-1">
+                    <AdminPendingBadge />
+                  </span>
+                )}
+              </span>
             </Link>
           ))}
         </nav>
@@ -81,7 +95,7 @@ export default function AdminLayout({
 
       {/* Main content */}
       <main className="flex-1 p-6 md:p-8 overflow-y-auto mt-12 md:mt-0">
-        {children}
+        <AdminGuard>{children}</AdminGuard>
       </main>
     </div>
   );

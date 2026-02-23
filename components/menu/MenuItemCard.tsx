@@ -78,9 +78,18 @@ export default function MenuItemCard({ item, category, onSelect }: MenuItemCardP
           </div>
         </div>
 
-        {/* Add button */}
-        <div className="shrink-0 w-9 h-9 rounded-xl bg-cameron-50 group-hover:bg-cameron-600 group-hover:text-white text-cameron-600 flex items-center justify-center transition-colors">
-          <Plus className="w-4 h-4" />
+        <div className="flex flex-col items-end gap-2 shrink-0">
+          {item.image && (
+            <img
+              src={item.image}
+              alt={name}
+              className="w-14 h-14 rounded-xl object-cover border border-cameron-100/60"
+            />
+          )}
+          {/* Add button */}
+          <div className="w-9 h-9 rounded-xl bg-cameron-50 group-hover:bg-cameron-600 group-hover:text-white text-cameron-600 flex items-center justify-center transition-colors">
+            <Plus className="w-4 h-4" />
+          </div>
         </div>
       </div>
     </button>

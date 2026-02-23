@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Header from '@/components/layout/Header';
 import Hero from '@/components/menu/Hero';
 import CategoryTabs from '@/components/menu/CategoryTabs';
@@ -16,6 +16,7 @@ import {
   otherItems,
   matchaItems,
 } from '@/data/menu-data';
+import { getCategories, getMenuItems } from '@/lib/firestore';
 
 // Build local data with IDs (in production, this comes from Firestore)
 const categoriesWithIds: Category[] = [
@@ -30,7 +31,7 @@ function addIdsToItems(items: Omit<MenuItem, 'id'>[], prefix: string): MenuItem[
   return items.map((item, i) => ({ ...item, id: `${prefix}-${i}` }));
 }
 
-const allItems: MenuItem[] = [
+const fallbackItems: MenuItem[] = [
   ...addIdsToItems(milkTeaItems, 'mt'),
   ...addIdsToItems(coffeeItems, 'cf'),
   ...addIdsToItems(italianSodaItems, 'is'),
@@ -40,22 +41,42 @@ const allItems: MenuItem[] = [
 
 export default function MenuPage() {
   const { language } = useCartStore();
+  const [categories, setCategories] = useState<Category[]>(categoriesWithIds);
+  const [items, setItems] = useState<MenuItem[]>(fallbackItems);
   const [activeCategory, setActiveCategory] = useState(categoriesWithIds[0].id);
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
 
+  useEffect(() => {
+    async function loadMenu() {
+      try {
+        const [cats, menuItems] = await Promise.all([getCategories(), getMenuItems()]);
+        if (cats.length > 0) {
+          setCategories(cats);
+          setActiveCategory(cats[0].id);
+        }
+        if (menuItems.length > 0) {
+          setItems(menuItems.filter((item) => item.available));
+        }
+      } catch (error) {
+        console.error('Failed to load menu from Firestore:', error);
+      }
+    }
+    loadMenu();
+  }, []);
+
   const filteredItems = useMemo(
-    () => allItems.filter((item) => item.categoryId === activeCategory),
-    [activeCategory]
+    () => items.filter((item) => item.categoryId === activeCategory),
+    [activeCategory, items]
   );
 
-  const activeCat = categoriesWithIds.find((c) => c.id === activeCategory)!;
+  const activeCat = categories.find((c) => c.id === activeCategory)!;
 
   return (
     <div className="min-h-screen">
       <Header />
       <Hero />
       <CategoryTabs
-        categories={categoriesWithIds}
+        categories={categories}
         activeCategory={activeCategory}
         onSelect={setActiveCategory}
       />
@@ -101,7 +122,7 @@ export default function MenuPage() {
       {selectedItem && (
         <ItemModal
           item={selectedItem}
-          category={categoriesWithIds.find((c) => c.id === selectedItem.categoryId)!}
+          category={categories.find((c) => c.id === selectedItem.categoryId)!}
           onClose={() => setSelectedItem(null)}
         />
       )}

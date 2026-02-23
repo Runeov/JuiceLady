@@ -88,11 +88,20 @@ export default function ItemModal({ item, category, onClose }: ItemModalProps) {
 
         {/* Header */}
         <div className="p-6 pb-4 border-b border-gray-100">
-          <div className="pr-8">
-            <h2 className="font-display text-xl font-bold text-cameron-900">{name}</h2>
-            <p className="text-sm text-cameron-500 mt-0.5 font-thai">
-              {language === 'th' ? item.name_en : item.name_th}
-            </p>
+          <div className="pr-8 flex items-start gap-4">
+            {item.image && (
+              <img
+                src={item.image}
+                alt={name}
+                className="w-20 h-20 rounded-2xl object-cover border border-gray-100"
+              />
+            )}
+            <div>
+              <h2 className="font-display text-xl font-bold text-cameron-900">{name}</h2>
+              <p className="text-sm text-cameron-500 mt-0.5 font-thai">
+                {language === 'th' ? item.name_en : item.name_th}
+              </p>
+            </div>
           </div>
         </div>
 

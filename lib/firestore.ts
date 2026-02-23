@@ -141,3 +141,25 @@ export async function getOrdersByDate(date: string): Promise<Order[]> {
     } as Order;
   });
 }
+
+export async function getOrdersByUserId(
+  userId: string,
+  count: number = 50
+): Promise<Order[]> {
+  const q = query(
+    collection(db, 'orders'),
+    where('userId', '==', userId),
+    orderBy('createdAt', 'desc'),
+    limit(count)
+  );
+  const snapshot = await getDocs(q);
+  return snapshot.docs.map((docSnap) => {
+    const data = docSnap.data();
+    return {
+      id: docSnap.id,
+      ...data,
+      createdAt: data.createdAt?.toDate(),
+      updatedAt: data.updatedAt?.toDate(),
+    } as Order;
+  });
+}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
@@ -18,11 +18,13 @@ import { formatPrice, getTempLabel, cn } from '@/lib/utils';
 import Header from '@/components/layout/Header';
 import type { PaymentMethod } from '@/types';
 import { toast } from 'sonner';
+import { useAuth } from '@/components/providers/AuthProvider';
 
 export default function CheckoutPage() {
   const router = useRouter();
   const { items, language, getTotal, clearCart } = useCartStore();
   const total = getTotal();
+  const { user } = useAuth();
 
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('cash');
   const [customerName, setCustomerName] = useState('');
@@ -31,6 +33,15 @@ export default function CheckoutPage() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [orderComplete, setOrderComplete] = useState(false);
   const [orderId, setOrderId] = useState('');
+
+  useEffect(() => {
+    if (!customerPhone && user?.phoneNumber) {
+      setCustomerPhone(user.phoneNumber);
+    }
+    if (!customerName && user?.displayName) {
+      setCustomerName(user.displayName);
+    }
+  }, [customerName, customerPhone, user]);
 
   if (items.length === 0 && !orderComplete) {
     router.push('/cart');
@@ -74,6 +85,9 @@ export default function CheckoutPage() {
         customerName: customerName.trim(),
         customerPhone: customerPhone.trim(),
         customerNote: customerNote.trim() || undefined,
+        userId: user?.uid,
+        userEmail: user?.email || undefined,
+        userPhone: user?.phoneNumber || undefined,
       };
 
       const res = await fetch('/api/orders', {

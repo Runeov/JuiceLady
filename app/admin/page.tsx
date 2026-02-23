@@ -155,11 +155,16 @@ export default function AdminDashboard() {
               No orders yet
             </div>
           ) : (
-            orders.slice(0, 15).map((order) => (
-              <div
-                key={order.id}
-                className="px-6 py-4 flex items-center gap-4 hover:bg-gray-50/50 transition-colors"
-              >
+            orders.slice(0, 15).map((order) => {
+              const isServed = order.orderStatus === 'completed';
+              return (
+                <div
+                  key={order.id}
+                  className={cn(
+                    'px-6 py-4 flex items-center gap-4 hover:bg-gray-50/50 transition-colors',
+                    isServed && 'opacity-60'
+                  )}
+                >
                 {/* Order info */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
@@ -176,10 +181,20 @@ export default function AdminDashboard() {
                       {order.paymentStatus}
                     </span>
                   </div>
-                  <p className="text-sm font-medium text-gray-900">
+                  <p
+                    className={cn(
+                      'text-sm font-medium text-gray-900',
+                      isServed && 'line-through text-gray-400'
+                    )}
+                  >
                     {order.customerName}
                   </p>
-                  <p className="text-xs text-gray-400 truncate">
+                  <p
+                    className={cn(
+                      'text-xs text-gray-400 truncate',
+                      isServed && 'line-through'
+                    )}
+                  >
                     {order.items?.map((i: any) => `${i.quantity}x ${i.name_en}`).join(', ')}
                   </p>
                 </div>
@@ -245,8 +260,9 @@ export default function AdminDashboard() {
                     </button>
                   )}
                 </div>
-              </div>
-            ))
+                </div>
+              );
+            })
           )}
         </div>
       </div>
