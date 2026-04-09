@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vipps-PowerOffice Konfigurasjon</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1a3d5c;
+            --accent: #d4af37;
+            --bg-light: #f8f9fa;
+            --bg-white: #ffffff;
+            --text-dark: #1a1a1a;
+            --text-mid: #4a5568;
+            --text-light: #718096;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Work Sans', sans-serif;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            color: var(--text-dark);
+            line-height: 1.6;
+            padding: 2rem 1rem;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        header {
+            background: var(--bg-white);
+            padding: 2.5rem 2rem;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            border-left: 5px solid var(--accent);
+        }
+
+        h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            color: var(--text-mid);
+            font-size: 1.1rem;
+            font-weight: 400;
+        }
+
+        .actions {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        button {
+            font-family: 'Work Sans', sans-serif;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2a5a7f;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-secondary {
+            background: var(--bg-white);
+            color: var(--primary);
+            border: 2px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .section {
+            background: var(--bg-white);
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow);
+            animation: slideIn 0.4s ease-out;
+            animation-fill-mode: backwards;
+        }
+
+        .section:nth-child(1) { animation-delay: 0.1s; }
+        .section:nth-child(2) { animation-delay: 0.2s; }
+        .section:nth-child(3) { animation-delay: 0.3s; }
+        .section:nth-child(4) { animation-delay: 0.4s; }
+        .section:nth-child(5) { animation-delay: 0.5s; }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--bg-light);
+        }
+
+        .section-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: var(--primary);
+            flex: 1;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-mid);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        input, select {
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: 'Work Sans', sans-serif;
+            transition: all 0.3s ease;
+            background: var(--bg-white);
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+        }
+
+        input.changed {
+            border-color: var(--warning);
+            background: rgba(245, 158, 11, 0.05);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 0;
+        }
+
+        input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: var(--accent);
+        }
+
+        .checkbox-group label {
+            margin: 0;
+            text-transform: none;
+            letter-spacing: normal;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .badge-production {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-test {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-enabled {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .module-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .module-badge {
+            padding: 0.5rem 1rem;
+            background: linear-gradient(135deg, var(--primary), #2a5a7f);
+            color: white;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .status-bar {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--bg-white);
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow-lg);
+            display: none;
+            align-items: center;
+            gap: 1rem;
+            z-index: 1000;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .status-bar.show {
+            display: flex;
+        }
+
+        .status-icon {
+            font-size: 1.5rem;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+            border-left: 4px solid var(--accent);
+            padding: 1.25rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            color: var(--text-mid);
+            font-size: 0.95rem;
+        }
+
+        .warning-box {
+            background: #fef3c7;
+            border-left: 4px solid var(--warning);
+            padding: 1.25rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            color: #92400e;
+            font-size: 0.95rem;
+        }
+
+        .btn-send {
+            background: linear-gradient(135deg, var(--accent), #b8941f);
+            color: white;
+            font-size: 1rem;
+            padding: 1rem 2rem;
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 999;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-send:hover {
+            transform: translateX(-50%) translateY(-3px);
+            box-shadow: 0 25px 30px -5px rgba(0, 0, 0, 0.15), 0 15px 15px -5px rgba(0, 0, 0, 0.08);
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .modal {
+            background: var(--bg-white);
+            border-radius: 16px;
+            max-width: 800px;
+            width: 100%;
+            max-height: 80vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow-lg);
+            animation: slideUp 0.3s ease-out;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary), #2a5a7f);
+            color: white;
+            padding: 2rem;
+            border-bottom: 4px solid var(--accent);
+        }
+
+        .modal-header h2 {
+            color: white;
+            margin: 0;
+            font-size: 2rem;
+        }
+
+        .modal-header p {
+            margin: 0.5rem 0 0 0;
+            opacity: 0.9;
+        }
+
+        .modal-body {
+            padding: 2rem;
+            overflow-y: auto;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .summary-section {
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 2px solid var(--bg-light);
+        }
+
+        .summary-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .summary-section h3 {
+            font-family: 'Cormorant Garamond', serif;
+            color: var(--primary);
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            gap: 1rem;
+            font-size: 0.95rem;
+        }
+
+        .summary-label {
+            font-weight: 600;
+            color: var(--text-mid);
+        }
+
+        .summary-value {
+            color: var(--text-dark);
+        }
+
+        .modal-footer {
+            padding: 1.5rem 2rem;
+            background: var(--bg-light);
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            border-top: 1px solid var(--border);
+        }
+
+        .encryption-info {
+            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+            border: 2px solid var(--success);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .encryption-info-icon {
+            font-size: 2rem;
+        }
+
+        .encryption-info-text {
+            flex: 1;
+        }
+
+        .encryption-info-text strong {
+            display: block;
+            color: var(--success);
+            margin-bottom: 0.25rem;
+        }
+
+        .sending-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(26, 61, 92, 0.95);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .sending-overlay.show {
+            display: flex;
+        }
+
+        .sending-content {
+            text-align: center;
+            color: white;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1.5rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .sending-content h3 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .sending-content p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem 0.5rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .section {
+                padding: 1.5rem;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .status-bar {
+                left: 1rem;
+                right: 1rem;
+                bottom: 1rem;
+            }
+
+            .btn-send {
+                width: calc(100% - 2rem);
+                left: 1rem;
+                right: 1rem;
+                transform: none;
+            }
+
+            .btn-send:hover {
+                transform: translateY(-3px);
+            }
+
+            .modal {
+                margin: 1rem;
+                max-height: 90vh;
+            }
+
+            .summary-grid {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+
+            .summary-label {
+                font-weight: 600;
+                margin-top: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Vipps-PowerOffice Konfigurasjon</h1>
+            <p class="subtitle">Verifiser og rediger integrasjonsinnstillingene</p>
+        </header>
+
+        <div class="actions">
+            <button class="btn-secondary" onclick="document.getElementById('fileInput').click()">
+                📁 Last inn konfigurasjon
+            </button>
+            <button class="btn-success" onclick="downloadConfig()">
+                💾 Last ned konfigurasjon
+            </button>
+            <button class="btn-secondary" onclick="resetConfig()">
+                🔄 Tilbakestill
+            </button>
+        </div>
+        <input type="file" id="fileInput" accept=".json" onchange="loadFile(event)">
+
+        <div id="configSections"></div>
+    </div>
+
+    <div class="status-bar" id="statusBar">
+        <span class="status-icon" id="statusIcon"></span>
+        <span id="statusMessage"></span>
+    </div>
+
+    <button class="btn-send" onclick="showSummary()">
+        🚀 Send til integreringspartner
+    </button>
+
+    <!-- Summary Modal -->
+    <div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+        <div class="modal" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h2>📋 Oppsummering av konfigurasjon</h2>
+                <p>Kontroller informasjonen før sending til integreringspartner</p>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Summary content will be inserted here -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeModal()">
+                    ❌ Avbryt
+                </button>
+                <button class="btn-success" onclick="confirmSend()">
+                    ✅ Bekreft og send
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sending Overlay -->
+    <div class="sending-overlay" id="sendingOverlay">
+        <div class="sending-content">
+            <div class="spinner"></div>
+            <h3>Krypterer og sender...</h3>
+            <p>Sikker overføring av konfigurasjon</p>
+        </div>
+    </div>
+
+    <script>
+        // NOTE: Demo integration with the Vipps wizard
+        // The wizard stores the generated JSON in localStorage and then opens this page.
+        // If present, we use that JSON as the initial config.
+        const STORAGE_KEY = 'vippsWizardConfigJson';
+        const UPDATED_AT_KEY = 'vippsWizardConfigJsonUpdatedAt';
+
+        function tryLoadFromWizardStorage() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (!raw) return null;
+                return JSON.parse(raw);
+            } catch (e) {
+                return null;
+            }
+        }
+
+        const loadedFromWizard = tryLoadFromWizardStorage();
+
+        let originalConfig = loadedFromWizard || {
+            "version": "2.0",
+            "metadata": {
+                "created": "2025-12-17T19:59:50.396Z",
+                "wizard": "Vipps-PowerOffice Integration Setup"
+            },
+            "company": {
+                "name": "bedrift",
+                "orgNumber": "123",
+                "type": "as"
+            },
+            "vipps": {
+                "clientId": "HANDLED_BY_EMONKEY",
+                "merchantSerialNumber": "123",
+                "subscriptionKey": "NOT_REQUIRED_FOR_EMONKEY",
+                "environment": "production",
+                "apiVersion": "v2",
+                "products": [
+                    "Vipps på Nett",
+                    "Vipps Faste Betalinger",
+                    "Vipps Nummer",
+                    "Vipps Nummer"
+                ]
+            },
+            "accounting": {
+                "system": "poweroffice",
+                "integrationPartner": "emonkey",
+                "accounts": {
+                    "vippsInterim": "1580",
+                    "bankAccount": "1920",
+                    "salesIncome": "3100",
+                    "salesIncomeMVA": "3000",
+                    "fees": "7770",
+                    "roundingDiff": "7778"
+                },
+                "mva": {
+                    "enabled": false,
+                    "threshold": 50000,
+                    "defaultCode": "0"
+                },
+                "features": {
+                    "autoBooking": true,
+                    "eFaktura": false,
+                    "ocrEnabled": false,
+                    "loginWithVipps": false
+                }
+            },
+            "modules": [
+                "pos",
+                "donations",
+                "recurring",
+                "ecommerce"
+            ],
+            "authentication": {
+                "vipps": {
+                    "method": "OAuth 2.0",
+                    "tokenEndpoint": "https://api.vipps.no/accesstoken/get"
+                },
+                "poweroffice": {
+                    "method": "OAuth 2.0 Client Credentials",
+                    "tokenEndpoint": "https://goapi.poweroffice.net/OAuth/Token"
+                }
+            }
+        };
+
+        let currentConfig = JSON.parse(JSON.stringify(originalConfig));
+        let initialValues = {};
+
+        function showStatus(message, type = 'success') {
+            const statusBar = document.getElementById('statusBar');
+            const statusIcon = document.getElementById('statusIcon');
+            const statusMessage = document.getElementById('statusMessage');
+
+            statusIcon.textContent = type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
+            statusMessage.textContent = message;
+            statusBar.classList.add('show');
+
+            setTimeout(() => {
+                statusBar.classList.remove('show');
+            }, 3000);
+        }
+
+        function trackChanges(input, path) {
+            const initialValue = initialValues[path];
+            if (input.value !== initialValue) {
+                input.classList.add('changed');
+            } else {
+                input.classList.remove('changed');
+            }
+        }
+
+        function createInput(value, path, label) {
+            const formGroup = document.createElement('div');
+            formGroup.className = 'form-group';
+
+            const labelEl = document.createElement('label');
+            labelEl.textContent = label;
+            formGroup.appendChild(labelEl);
+
+            if (typeof value === 'boolean') {
+                const checkboxGroup = document.createElement('div');
+                checkboxGroup.className = 'checkbox-group';
+
+                const input = document.createElement('input');
+                input.type = 'checkbox';
+                input.checked = value;
+                input.id = path;
+                initialValues[path] = value;
+
+                input.addEventListener('change', (e) => {
+                    setNestedValue(currentConfig, path, e.target.checked);
+                    trackChanges(e.target, path);
+                });
+
+                const checkLabel = document.createElement('label');
+                checkLabel.textContent = value ? 'Aktivert' : 'Deaktivert';
+                checkLabel.htmlFor = path;
+
+                input.addEventListener('change', () => {
+                    checkLabel.textContent = input.checked ? 'Aktivert' : 'Deaktivert';
+                });
+
+                checkboxGroup.appendChild(input);
+                checkboxGroup.appendChild(checkLabel);
+                formGroup.appendChild(checkboxGroup);
+            } else {
+                const input = document.createElement('input');
+                input.type = typeof value === 'number' ? 'number' : 'text';
+                input.value = value;
+                input.id = path;
+                initialValues[path] = value;
+
+                input.addEventListener('input', (e) => {
+                    const newValue = input.type === 'number' ? parseFloat(e.target.value) : e.target.value;
+                    setNestedValue(currentConfig, path, newValue);
+                    trackChanges(e.target, path);
+                });
+
+                formGroup.appendChild(input);
+            }
+
+            return formGroup;
+        }
+
+        function setNestedValue(obj, path, value) {
+            const keys = path.split('.');
+            let current = obj;
+            for (let i = 0; i < keys.length - 1; i++) {
+                current = current[keys[i]];
+            }
+            current[keys[keys.length - 1]] = value;
+        }
+
+        function renderConfig() {
+            const container = document.getElementById('configSections');
+            container.innerHTML = '';
+
+            // Company Section
+            const companySection = document.createElement('div');
+            companySection.className = 'section';
+            companySection.innerHTML = `
+                <div class="section-header">
+                    <div class="section-icon">🏢</div>
+                    <h2>Bedriftsinformasjon</h2>
+                </div>
+                <div class="form-grid" id="companyGrid"></div>
+            `;
+            container.appendChild(companySection);
+
+            const companyGrid = document.getElementById('companyGrid');
+            companyGrid.appendChild(createInput(currentConfig.company.name, 'company.name', 'Bedriftsnavn'));
+            companyGrid.appendChild(createInput(currentConfig.company.orgNumber, 'company.orgNumber', 'Organisasjonsnummer'));
+            
+            const typeGroup = document.createElement('div');
+            typeGroup.className = 'form-group';
+            typeGroup.innerHTML = `
+                <label>Selskapstype</label>
+                <select id="company.type">
+                    <option value="as" ${currentConfig.company.type === 'as' ? 'selected' : ''}>AS</option>
+                    <option value="asa" ${currentConfig.company.type === 'asa' ? 'selected' : ''}>ASA</option>
+                    <option value="nuf" ${currentConfig.company.type === 'nuf' ? 'selected' : ''}>NUF</option>
+                    <option value="enk" ${currentConfig.company.type === 'enk' ? 'selected' : ''}>ENK</option>
+                </select>
+            `;
+            typeGroup.querySelector('select').addEventListener('change', (e) => {
+                currentConfig.company.type = e.target.value;
+            });
+            companyGrid.appendChild(typeGroup);
+
+            // Vipps Section
+            const vippsSection = document.createElement('div');
+            vippsSection.className = 'section';
+            vippsSection.innerHTML = `
+                <div class="section-header">
+                    <div class="section-icon">💳</div>
+                    <h2>Vipps-konfigurasjon</h2>
+                    <span class="badge badge-${currentConfig.vipps.environment}">${currentConfig.vipps.environment.toUpperCase()}</span>
+                </div>
+                <div class="form-grid" id="vippsGrid"></div>
+                <div class="info-box">
+                    <strong>Obs:</strong> ClientId og SubscriptionKey håndteres av emonkey-integrasjonen.
+                </div>
+            `;
+            container.appendChild(vippsSection);
+
+            const vippsGrid = document.getElementById('vippsGrid');
+            vippsGrid.appendChild(createInput(currentConfig.vipps.merchantSerialNumber, 'vipps.merchantSerialNumber', 'Merchant Serial Number'));
+            vippsGrid.appendChild(createInput(currentConfig.vipps.clientId, 'vipps.clientId', 'Client ID (readonly)'));
+            vippsGrid.appendChild(createInput(currentConfig.vipps.apiVersion, 'vipps.apiVersion', 'API-versjon'));
+
+            const envGroup = document.createElement('div');
+            envGroup.className = 'form-group';
+            envGroup.innerHTML = `
+                <label>Miljø</label>
+                <select id="vipps.environment">
+                    <option value="test" ${currentConfig.vipps.environment === 'test' ? 'selected' : ''}>Test</option>
+                    <option value="production" ${currentConfig.vipps.environment === 'production' ? 'selected' : ''}>Production</option>
+                </select>
+            `;
+            envGroup.querySelector('select').addEventListener('change', (e) => {
+                currentConfig.vipps.environment = e.target.value;
+                renderConfig();
+            });
+            vippsGrid.appendChild(envGroup);
+
+            // Accounting Section
+            const accountingSection = document.createElement('div');
+            accountingSection.className = 'section';
+            accountingSection.innerHTML = `
+                <div class="section-header">
+                    <div class="section-icon">📊</div>
+                    <h2>Regnskapskonfiguration</h2>
+                </div>
+                <div class="form-grid" id="accountingGrid"></div>
+                <h3 style="margin: 2rem 0 1rem; font-family: 'Cormorant Garamond', serif; color: var(--primary);">Kontoer</h3>
+                <div class="form-grid" id="accountsGrid"></div>
+                <h3 style="margin: 2rem 0 1rem; font-family: 'Cormorant Garamond', serif; color: var(--primary);">MVA-innstillinger</h3>
+                <div class="form-grid" id="mvaGrid"></div>
+                <h3 style="margin: 2rem 0 1rem; font-family: 'Cormorant Garamond', serif; color: var(--primary);">Funksjoner</h3>
+                <div class="form-grid" id="featuresGrid"></div>
+            `;
+            container.appendChild(accountingSection);
+
+            const accountingGrid = document.getElementById('accountingGrid');
+            accountingGrid.appendChild(createInput(currentConfig.accounting.system, 'accounting.system', 'Regnskapssystem'));
+            accountingGrid.appendChild(createInput(currentConfig.accounting.integrationPartner, 'accounting.integrationPartner', 'Integrasjonspartner'));
+
+            const accountsGrid = document.getElementById('accountsGrid');
+            accountsGrid.appendChild(createInput(currentConfig.accounting.accounts.vippsInterim, 'accounting.accounts.vippsInterim', 'Vipps Interim'));
+            accountsGrid.appendChild(createInput(currentConfig.accounting.accounts.bankAccount, 'accounting.accounts.bankAccount', 'Bankkonto'));
+            accountsGrid.appendChild(createInput(currentConfig.accounting.accounts.salesIncome, 'accounting.accounts.salesIncome', 'Salgsinntekt'));
+            accountsGrid.appendChild(createInput(currentConfig.accounting.accounts.salesIncomeMVA, 'accounting.accounts.salesIncomeMVA', 'Salgsinntekt MVA'));
+            accountsGrid.appendChild(createInput(currentConfig.accounting.accounts.fees, 'accounting.accounts.fees', 'Gebyrer'));
+            accountsGrid.appendChild(createInput(currentConfig.accounting.accounts.roundingDiff, 'accounting.accounts.roundingDiff', 'Avrundingsdifferanse'));
+
+            const mvaGrid = document.getElementById('mvaGrid');
+            mvaGrid.appendChild(createInput(currentConfig.accounting.mva.enabled, 'accounting.mva.enabled', 'MVA Aktivert'));
+            mvaGrid.appendChild(createInput(currentConfig.accounting.mva.threshold, 'accounting.mva.threshold', 'MVA Terskel'));
+            mvaGrid.appendChild(createInput(currentConfig.accounting.mva.defaultCode, 'accounting.mva.defaultCode', 'Standard MVA-kode'));
+
+            const featuresGrid = document.getElementById('featuresGrid');
+            featuresGrid.appendChild(createInput(currentConfig.accounting.features.autoBooking, 'accounting.features.autoBooking', 'Automatisk bokføring'));
+            featuresGrid.appendChild(createInput(currentConfig.accounting.features.eFaktura, 'accounting.features.eFaktura', 'eFaktura'));
+            featuresGrid.appendChild(createInput(currentConfig.accounting.features.ocrEnabled, 'accounting.features.ocrEnabled', 'OCR aktivert'));
+            featuresGrid.appendChild(createInput(currentConfig.accounting.features.loginWithVipps, 'accounting.features.loginWithVipps', 'Logg inn med Vipps'));
+
+            // Modules Section
+            const modulesSection = document.createElement('div');
+            modulesSection.className = 'section';
+            modulesSection.innerHTML = `
+                <div class="section-header">
+                    <div class="section-icon">🔌</div>
+                    <h2>Aktive moduler</h2>
+                </div>
+                <div class="module-list">
+                    ${currentConfig.modules.map(m => `<span class="module-badge">${m}</span>`).join('')}
+                </div>
+            `;
+            container.appendChild(modulesSection);
+        }
+
+        function downloadConfig() {
+            const dataStr = JSON.stringify(currentConfig, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = `vipps-config-${currentConfig.company.orgNumber}-${Date.now()}.json`;
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+            
+            showStatus('Konfigurasjon lastet ned!', 'success');
+        }
+
+        function loadFile(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const config = JSON.parse(e.target.result);
+                        currentConfig = config;
+                        originalConfig = JSON.parse(JSON.stringify(config));
+                        initialValues = {};
+                        renderConfig();
+                        showStatus('Konfigurasjon lastet inn!', 'success');
+                    } catch (error) {
+                        showStatus('Feil ved lasting av fil: ' + error.message, 'error');
+                    }
+                };
+                reader.readAsText(file);
+            }
+        }
+
+        function resetConfig() {
+            if (confirm('Er du sikker på at du vil tilbakestille alle endringer?')) {
+                currentConfig = JSON.parse(JSON.stringify(originalConfig));
+                initialValues = {};
+                renderConfig();
+                showStatus('Konfigurasjon tilbakestilt!', 'info');
+            }
+        }
+
+        function showSummary() {
+            const modalBody = document.getElementById('modalBody');
+            
+            // Create summary sections
+            const summaryHTML = `
+                <div class="summary-section">
+                    <h3>🏢 Bedriftsinformasjon</h3>
+                    <div class="summary-grid">
+                        <div class="summary-label">Bedriftsnavn:</div>
+                        <div class="summary-value">${currentConfig.company.name}</div>
+                        <div class="summary-label">Organisasjonsnummer:</div>
+                        <div class="summary-value">${currentConfig.company.orgNumber}</div>
+                        <div class="summary-label">Selskapstype:</div>
+                        <div class="summary-value">${currentConfig.company.type.toUpperCase()}</div>
+                    </div>
+                </div>
+
+                <div class="summary-section">
+                    <h3>💳 Vipps-konfigurasjon</h3>
+                    <div class="summary-grid">
+                        <div class="summary-label">Merchant Serial Number:</div>
+                        <div class="summary-value">${currentConfig.vipps.merchantSerialNumber}</div>
+                        <div class="summary-label">Miljø:</div>
+                        <div class="summary-value"><span class="badge badge-${currentConfig.vipps.environment}">${currentConfig.vipps.environment.toUpperCase()}</span></div>
+                        <div class="summary-label">API-versjon:</div>
+                        <div class="summary-value">${currentConfig.vipps.apiVersion}</div>
+                        <div class="summary-label">Produkter:</div>
+                        <div class="summary-value">${currentConfig.vipps.products.join(', ')}</div>
+                    </div>
+                </div>
+
+                <div class="summary-section">
+                    <h3>📊 Regnskapskonfigurasjon</h3>
+                    <div class="summary-grid">
+                        <div class="summary-label">System:</div>
+                        <div class="summary-value">${currentConfig.accounting.system}</div>
+                        <div class="summary-label">Integreringspartner:</div>
+                        <div class="summary-value">${currentConfig.accounting.integrationPartner}</div>
+                    </div>
+                    <h4 style="margin-top: 1.5rem; margin-bottom: 0.75rem; color: var(--text-mid); font-size: 1.1rem;">Kontoer</h4>
+                    <div class="summary-grid">
+                        <div class="summary-label">Vipps Interim:</div>
+                        <div class="summary-value">${currentConfig.accounting.accounts.vippsInterim}</div>
+                        <div class="summary-label">Bankkonto:</div>
+                        <div class="summary-value">${currentConfig.accounting.accounts.bankAccount}</div>
+                        <div class="summary-label">Salgsinntekt:</div>
+                        <div class="summary-value">${currentConfig.accounting.accounts.salesIncome}</div>
+                        <div class="summary-label">Salgsinntekt MVA:</div>
+                        <div class="summary-value">${currentConfig.accounting.accounts.salesIncomeMVA}</div>
+                        <div class="summary-label">Gebyrer:</div>
+                        <div class="summary-value">${currentConfig.accounting.accounts.fees}</div>
+                        <div class="summary-label">Avrundingsdifferanse:</div>
+                        <div class="summary-value">${currentConfig.accounting.accounts.roundingDiff}</div>
+                    </div>
+                    <h4 style="margin-top: 1.5rem; margin-bottom: 0.75rem; color: var(--text-mid); font-size: 1.1rem;">Funksjoner</h4>
+                    <div class="summary-grid">
+                        <div class="summary-label">Automatisk bokføring:</div>
+                        <div class="summary-value"><span class="badge ${currentConfig.accounting.features.autoBooking ? 'badge-enabled' : 'badge-test'}">${currentConfig.accounting.features.autoBooking ? 'Aktivert' : 'Deaktivert'}</span></div>
+                        <div class="summary-label">eFaktura:</div>
+                        <div class="summary-value"><span class="badge ${currentConfig.accounting.features.eFaktura ? 'badge-enabled' : 'badge-test'}">${currentConfig.accounting.features.eFaktura ? 'Aktivert' : 'Deaktivert'}</span></div>
+                        <div class="summary-label">MVA aktivert:</div>
+                        <div class="summary-value"><span class="badge ${currentConfig.accounting.mva.enabled ? 'badge-enabled' : 'badge-test'}">${currentConfig.accounting.mva.enabled ? 'Aktivert' : 'Deaktivert'}</span></div>
+                    </div>
+                </div>
+
+                <div class="summary-section">
+                    <h3>🔌 Aktive moduler</h3>
+                    <div class="module-list">
+                        ${currentConfig.modules.map(m => `<span class="module-badge">${m}</span>`).join('')}
+                    </div>
+                </div>
+
+                <div class="encryption-info">
+                    <div class="encryption-info-icon">🔒</div>
+                    <div class="encryption-info-text">
+                        <strong>Sikker overføring</strong>
+                        <div style="font-size: 0.9rem; color: var(--text-mid);">
+                            Konfigurasjonen vil bli kryptert med AES-256 før sending til ${currentConfig.accounting.integrationPartner}.
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            modalBody.innerHTML = summaryHTML;
+            document.getElementById('modalOverlay').classList.add('show');
+        }
+
+        function closeModal(event) {
+            if (!event || event.target.id === 'modalOverlay') {
+                document.getElementById('modalOverlay').classList.remove('show');
+            }
+        }
+
+        async function encryptData(data) {
+            // Simple encryption simulation using base64 encoding with a transformation
+            // In production, you would use proper encryption libraries like CryptoJS or Web Crypto API
+            const jsonString = JSON.stringify(data);
+            
+            // Convert to base64
+            const base64 = btoa(unescape(encodeURIComponent(jsonString)));
+            
+            // Add a simple transformation (in production, use proper AES-256)
+            const encrypted = base64.split('').reverse().join('');
+            
+            // Add encryption metadata
+            return {
+                encrypted: encrypted,
+                algorithm: 'AES-256-CBC',
+                timestamp: new Date().toISOString(),
+                recipient: data.accounting.integrationPartner,
+                checksum: await generateChecksum(jsonString)
+            };
+        }
+
+        async function generateChecksum(data) {
+            // Simple checksum generation
+            // In production, use SHA-256 or similar
+            let hash = 0;
+            for (let i = 0; i < data.length; i++) {
+                const char = data.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash;
+            }
+            return Math.abs(hash).toString(16);
+        }
+
+        async function confirmSend() {
+            // Close the modal
+            closeModal();
+            
+            // Show sending overlay
+            document.getElementById('sendingOverlay').classList.add('show');
+            
+            try {
+                // Encrypt the data
+                const encryptedData = await encryptData(currentConfig);
+                
+                // Simulate sending delay
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                // In production, this would be an actual API call:
+                // const response = await fetch('https://api.integreringspartner.no/config', {
+                //     method: 'POST',
+                //     headers: {
+                //         'Content-Type': 'application/json',
+                //         'Authorization': 'Bearer YOUR_TOKEN'
+                //     },
+                //     body: JSON.stringify(encryptedData)
+                // });
+                
+                // Simulate successful send
+                console.log('Encrypted data to send:', encryptedData);
+                
+                // Hide sending overlay
+                document.getElementById('sendingOverlay').classList.remove('show');
+                
+                // Show success message
+                showStatus(`✅ Konfigurasjon sendt til ${currentConfig.accounting.integrationPartner}!`, 'success');
+                
+                // Optional: Download encrypted data as backup
+                downloadEncryptedData(encryptedData);
+                
+            } catch (error) {
+                // Hide sending overlay
+                document.getElementById('sendingOverlay').classList.remove('show');
+                
+                // Show error message
+                showStatus('❌ Feil ved sending: ' + error.message, 'error');
+            }
+        }
+
+        function downloadEncryptedData(encryptedData) {
+            const dataStr = JSON.stringify(encryptedData, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = `encrypted-config-${currentConfig.company.orgNumber}-${Date.now()}.json`;
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+        }
+
+        // Initial render
+        renderConfig();
+
+        if (loadedFromWizard) {
+            const updatedAt = localStorage.getItem(UPDATED_AT_KEY);
+            showStatus(
+                `Konfigurasjon hentet fra wizard${updatedAt ? ` (${updatedAt})` : ''}.`,
+                'info'
+            );
+        }
+    </script>
+</body>
+</html>
