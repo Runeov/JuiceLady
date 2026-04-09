@@ -12,8 +12,8 @@ import {
   Upload,
   X,
 } from 'lucide-react';
-import { cn, formatPrice, getTempLabel } from '@/lib/utils';
-import type { Category, MenuItem, DrinkTemp } from '@/types';
+import { cn, formatPrice, getVariantLabel } from '@/lib/utils';
+import type { Category, MenuItem, ItemVariant } from '@/types';
 import { categories as categoryData } from '@/data/menu-data';
 import { addMenuItem, deleteMenuItem, getCategories, getMenuItems, updateMenuItem } from '@/lib/firestore';
 import { storage } from '@/lib/firebase';
@@ -21,30 +21,29 @@ import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { toast } from 'sonner';
 
 const fallbackCategories: Category[] = [
-  { ...categoryData[0], id: 'milk-tea' },
-  { ...categoryData[1], id: 'coffee' },
-  { ...categoryData[2], id: 'italian-soda' },
-  { ...categoryData[3], id: 'other' },
-  { ...categoryData[4], id: 'matcha' },
+  { ...categoryData[0], id: 'hot-drinks' },
+  { ...categoryData[1], id: 'cold-drinks' },
+  { ...categoryData[2], id: 'food' },
+  { ...categoryData[3], id: 'desserts' },
 ];
 
 interface EditState {
   id?: string;
-  name_en: string;
-  name_th: string;
+  name: string;
+  name_secondary: string;
   categoryId: string;
   available: boolean;
   popular: boolean;
   order: number;
-  prices: Partial<Record<DrinkTemp, number>>;
+  prices: Partial<Record<ItemVariant, number>>;
   singlePrice?: number;
   image?: string;
 }
 
 const emptyForm: EditState = {
-  name_en: '',
-  name_th: '',
-  categoryId: 'milk-tea',
+  name: '',
+  name_secondary: '',
+  categoryId: 'hot-drinks',
   available: true,
   popular: false,
   order: 1,
@@ -56,7 +55,7 @@ const emptyForm: EditState = {
 export default function AdminMenuPage() {
   const [items, setItems] = useState<MenuItem[]>([]);
   const [categories, setCategories] = useState<Category[]>(fallbackCategories);
-  const [activeCategory, setActiveCategory] = useState('milk-tea');
+  const [activeCategory, setActiveCategory] = useState('hot-drinks');
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
 
@@ -91,8 +90,8 @@ export default function AdminMenuPage() {
     .filter(
       (i) =>
         !searchQuery ||
-        i.name_en.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        i.name_th.includes(searchQuery)
+        i.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (i.name_secondary && i.name_secondary.toLowerCase().includes(searchQuery.toLowerCase()))
     );
 
   const startCreate = () => {
@@ -103,8 +102,8 @@ export default function AdminMenuPage() {
   const startEdit = (item: MenuItem) => {
     setForm({
       id: item.id,
-      name_en: item.name_en,
-      name_th: item.name_th,
+      name: item.name,
+      name_secondary: item.name_secondary || '',
       categoryId: item.categoryId,
       available: item.available,
       popular: Boolean(item.popular),
@@ -129,7 +128,7 @@ export default function AdminMenuPage() {
   };
 
   const handleDelete = async (item: MenuItem) => {
-    if (!confirm(`Delete "${item.name_en}"?`)) return;
+    if (!confirm(`Delete "${item.name}"?`)) return;
     const prev = items;
     setItems((current) => current.filter((i) => i.id !== item.id));
     try {
@@ -160,14 +159,14 @@ export default function AdminMenuPage() {
   };
 
   const handleSave = async () => {
-    if (!form.name_en.trim() || !form.name_th.trim()) {
-      toast.error('Name fields are required');
+    if (!form.name.trim()) {
+      toast.error('Name is required');
       return;
     }
     setSaving(true);
     const payload: Omit<MenuItem, 'id'> = {
-      name_en: form.name_en.trim(),
-      name_th: form.name_th.trim(),
+      name: form.name.trim(),
+      name_secondary: form.name_secondary.trim(),
       categoryId: form.categoryId,
       available: form.available,
       popular: form.popular,
@@ -200,6 +199,7 @@ export default function AdminMenuPage() {
 
   const formCategory = categories.find((c) => c.id === form.categoryId) || activeCat;
   const priceColumns = formCategory?.priceColumns || [];
+  const isSinglePrice = priceColumns.length === 0;
 
   return (
     <div className="max-w-5xl mx-auto">
@@ -212,7 +212,7 @@ export default function AdminMenuPage() {
         </div>
         <button
           onClick={startCreate}
-          className="inline-flex items-center gap-2 rounded-xl bg-cameron-700 text-white px-4 py-2 text-sm font-medium hover:bg-cameron-800 transition-colors"
+          className="inline-flex items-center gap-2 rounded-xl bg-brand-700 text-white px-4 py-2 text-sm font-medium hover:bg-brand-800 transition-colors"
         >
           <Plus className="w-4 h-4" />
           Add item
@@ -228,11 +228,11 @@ export default function AdminMenuPage() {
             className={cn(
               'px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all border',
               activeCategory === cat.id
-                ? 'bg-cameron-700 text-white border-cameron-700'
+                ? 'bg-brand-700 text-white border-brand-700'
                 : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
             )}
           >
-            {cat.icon} {cat.name_en}
+            {cat.icon} {cat.name}
           </button>
         ))}
       </div>
@@ -245,7 +245,7 @@ export default function AdminMenuPage() {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Search menu items..."
-          className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm focus:border-cameron-400 focus:outline-none"
+          className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm focus:border-brand-400 focus:outline-none"
         />
       </div>
 
@@ -270,7 +270,7 @@ export default function AdminMenuPage() {
                 {item.image && (
                   <img
                     src={item.image}
-                    alt={item.name_en}
+                    alt={item.name}
                     className="w-12 h-12 rounded-xl object-cover border border-gray-100"
                   />
                 )}
@@ -278,18 +278,20 @@ export default function AdminMenuPage() {
                 {/* Item info */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <h3 className="text-sm font-medium text-gray-900">{item.name_en}</h3>
+                    <h3 className="text-sm font-medium text-gray-900">{item.name}</h3>
                     {item.popular && (
                       <Star className="w-3 h-3 text-amber-400 fill-amber-400" />
                     )}
                   </div>
-                  <p className="text-xs text-gray-400 font-thai">{item.name_th}</p>
+                  {item.name_secondary && (
+                    <p className="text-xs text-gray-400">{item.name_secondary}</p>
+                  )}
                 </div>
 
                 {/* Prices */}
                 <div className="flex gap-2 shrink-0">
                   {item.singlePrice ? (
-                    <span className="text-xs bg-matcha/10 text-matcha-dark font-medium px-2 py-1 rounded-lg">
+                    <span className="text-xs bg-accent/10 text-accent-dark font-medium px-2 py-1 rounded-lg">
                       {formatPrice(item.singlePrice)}
                     </span>
                   ) : (
@@ -302,7 +304,7 @@ export default function AdminMenuPage() {
                             key={temp}
                             className="text-xs bg-gray-50 text-gray-600 font-medium px-2 py-1 rounded-lg"
                           >
-                            {getTempLabel(temp, 'en').charAt(0)}: {formatPrice(price)}
+                            {getVariantLabel(temp).charAt(0)}: {formatPrice(price)}
                           </span>
                         );
                       }
@@ -332,7 +334,7 @@ export default function AdminMenuPage() {
                     title={item.available ? 'Click to disable' : 'Click to enable'}
                   >
                     {item.available ? (
-                      <ToggleRight className="w-8 h-8 text-cameron-600" />
+                      <ToggleRight className="w-8 h-8 text-brand-600" />
                     ) : (
                       <ToggleLeft className="w-8 h-8 text-gray-300" />
                     )}
@@ -362,18 +364,18 @@ export default function AdminMenuPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="text-xs text-gray-500">Name (EN)</label>
+                <label className="text-xs text-gray-500">Name</label>
                 <input
-                  value={form.name_en}
-                  onChange={(e) => setForm((prev) => ({ ...prev, name_en: e.target.value }))}
+                  value={form.name}
+                  onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))}
                   className="w-full mt-1 px-3 py-2 rounded-lg border border-gray-200 text-sm"
                 />
               </div>
               <div>
-                <label className="text-xs text-gray-500">Name (TH)</label>
+                <label className="text-xs text-gray-500">Secondary Name</label>
                 <input
-                  value={form.name_th}
-                  onChange={(e) => setForm((prev) => ({ ...prev, name_th: e.target.value }))}
+                  value={form.name_secondary}
+                  onChange={(e) => setForm((prev) => ({ ...prev, name_secondary: e.target.value }))}
                   className="w-full mt-1 px-3 py-2 rounded-lg border border-gray-200 text-sm"
                 />
               </div>
@@ -386,7 +388,7 @@ export default function AdminMenuPage() {
                 >
                   {categories.map((cat) => (
                     <option key={cat.id} value={cat.id}>
-                      {cat.name_en}
+                      {cat.name}
                     </option>
                   ))}
                 </select>
@@ -455,7 +457,7 @@ export default function AdminMenuPage() {
             </div>
 
             <div className="mt-4">
-              {priceColumns.length === 0 ? (
+              {isSinglePrice ? (
                 <div>
                   <label className="text-xs text-gray-500">Single price</label>
                   <input
@@ -472,7 +474,7 @@ export default function AdminMenuPage() {
                   {priceColumns.map((temp) => (
                     <div key={temp}>
                       <label className="text-xs text-gray-500">
-                        {getTempLabel(temp, 'en')}
+                        {getVariantLabel(temp)}
                       </label>
                       <input
                         type="number"
@@ -501,7 +503,7 @@ export default function AdminMenuPage() {
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className="px-4 py-2 rounded-lg bg-cameron-700 text-white text-sm font-medium hover:bg-cameron-800 disabled:opacity-60"
+                className="px-4 py-2 rounded-lg bg-brand-700 text-white text-sm font-medium hover:bg-brand-800 disabled:opacity-60"
               >
                 {saving ? 'Saving...' : 'Save'}
               </button>

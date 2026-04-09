@@ -42,7 +42,7 @@ export default function AdminGuard({ children }: { children: React.ReactNode }) 
   if (loading || checking) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 text-cameron-600 animate-spin" />
+        <Loader2 className="w-8 h-8 text-brand-600 animate-spin" />
       </div>
     );
   }
@@ -56,7 +56,7 @@ export default function AdminGuard({ children }: { children: React.ReactNode }) 
         </p>
         <Link
           href="/account"
-          className="inline-flex items-center justify-center rounded-xl bg-cameron-700 text-white px-4 py-2 text-sm font-medium hover:bg-cameron-800 transition-colors"
+          className="inline-flex items-center justify-center rounded-xl bg-brand-700 text-white px-4 py-2 text-sm font-medium hover:bg-brand-800 transition-colors"
         >
           Go to Account
         </Link>

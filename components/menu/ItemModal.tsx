@@ -3,8 +3,8 @@
 import { useState } from 'react';
 import { X, Minus, Plus, ShoppingBag, Flame, Snowflake, IceCream2 } from 'lucide-react';
 import { useCartStore } from '@/lib/store';
-import { formatPrice, getTempLabel, cn } from '@/lib/utils';
-import type { MenuItem, Category, DrinkTemp, Addon } from '@/types';
+import { formatPrice, getVariantLabel, cn } from '@/lib/utils';
+import type { MenuItem, Category, ItemVariant, Addon } from '@/types';
 import { addons as defaultAddons } from '@/data/menu-data';
 import { toast } from 'sonner';
 
@@ -14,31 +14,29 @@ interface ItemModalProps {
   onClose: () => void;
 }
 
-const tempIcons: Record<DrinkTemp, React.ReactNode> = {
+const variantIcons: Record<ItemVariant, React.ReactNode> = {
   hot: <Flame className="w-4 h-4" />,
   iced: <Snowflake className="w-4 h-4" />,
   frappe: <IceCream2 className="w-4 h-4" />,
 };
 
 export default function ItemModal({ item, category, onClose }: ItemModalProps) {
-  const { language, addItem } = useCartStore();
-  const isMatcha = category.id === 'matcha';
+  const { addItem } = useCartStore();
+  const isSinglePrice = category.priceColumns.length === 0;
 
-  const availableTemps = isMatcha
-    ? (['iced'] as DrinkTemp[])
-    : category.priceColumns.filter((t) => item.prices[t] !== undefined);
+  const availableVariants = isSinglePrice
+    ? (['iced'] as ItemVariant[])
+    : category.priceColumns.filter((v) => item.prices[v] !== undefined);
 
-  const [selectedTemp, setSelectedTemp] = useState<DrinkTemp>(availableTemps[0]);
+  const [selectedVariant, setSelectedVariant] = useState<ItemVariant>(availableVariants[0]);
   const [selectedAddons, setSelectedAddons] = useState<Addon[]>([]);
   const [quantity, setQuantity] = useState(1);
   const [notes, setNotes] = useState('');
 
-  const name = language === 'th' ? item.name_th : item.name_en;
-
   // Calculate price
-  const basePrice = isMatcha
+  const basePrice = isSinglePrice
     ? item.singlePrice || 0
-    : item.prices[selectedTemp] || 0;
+    : item.prices[selectedVariant] || 0;
   const addonTotal = selectedAddons.reduce((sum, a) => sum + a.price, 0);
   const unitPrice = basePrice + addonTotal;
   const totalPrice = unitPrice * quantity;
@@ -52,16 +50,12 @@ export default function ItemModal({ item, category, onClose }: ItemModalProps) {
   };
 
   const handleAdd = () => {
-    addItem(item, selectedTemp, 'M', selectedAddons, quantity, basePrice, notes || undefined);
-    toast.success(
-      language === 'th'
-        ? `เพิ่ม ${item.name_th} ลงตะกร้าแล้ว!`
-        : `Added ${item.name_en} to cart!`
-    );
+    addItem(item, selectedVariant, 'M', selectedAddons, quantity, basePrice, notes || undefined);
+    toast.success(`Added ${item.name} to cart!`);
     onClose();
   };
 
-  // Fake addon data with IDs for local use
+  // Addon data with IDs for local use
   const addonOptions: Addon[] = defaultAddons.map((a, i) => ({
     ...a,
     id: `addon-${i}`,
@@ -92,42 +86,47 @@ export default function ItemModal({ item, category, onClose }: ItemModalProps) {
             {item.image && (
               <img
                 src={item.image}
-                alt={name}
+                alt={item.name}
                 className="w-20 h-20 rounded-2xl object-cover border border-gray-100"
               />
             )}
             <div>
-              <h2 className="font-display text-xl font-bold text-cameron-900">{name}</h2>
-              <p className="text-sm text-cameron-500 mt-0.5 font-thai">
-                {language === 'th' ? item.name_en : item.name_th}
-              </p>
+              <h2 className="font-display text-xl font-bold text-brand-900">{item.name}</h2>
+              {item.name_secondary && (
+                <p className="text-sm text-brand-500 mt-0.5">
+                  {item.name_secondary}
+                </p>
+              )}
+              {item.description && (
+                <p className="text-xs text-gray-400 mt-1">{item.description}</p>
+              )}
             </div>
           </div>
         </div>
 
         <div className="p-6 space-y-6">
-          {/* Temperature selection */}
-          {availableTemps.length > 1 && (
+          {/* Variant selection */}
+          {availableVariants.length > 1 && (
             <div>
-              <h3 className="text-sm font-semibold text-cameron-800 mb-3">
-                {language === 'th' ? 'เลือกอุณหภูมิ' : 'Temperature'}
+              <h3 className="text-sm font-semibold text-brand-800 mb-3">
+                Select Option
               </h3>
               <div className="flex gap-2">
-                {availableTemps.map((temp) => (
+                {availableVariants.map((variant) => (
                   <button
-                    key={temp}
-                    onClick={() => setSelectedTemp(temp)}
+                    key={variant}
+                    onClick={() => setSelectedVariant(variant)}
                     className={cn(
                       'flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-medium transition-all border-2',
-                      selectedTemp === temp
-                        ? 'border-cameron-600 bg-cameron-50 text-cameron-800'
+                      selectedVariant === variant
+                        ? 'border-brand-600 bg-brand-50 text-brand-800'
                         : 'border-gray-100 bg-gray-50/50 text-gray-500 hover:border-gray-200'
                     )}
                   >
-                    {tempIcons[temp]}
-                    <span>{getTempLabel(temp, language)}</span>
+                    {variantIcons[variant]}
+                    <span>{getVariantLabel(variant)}</span>
                     <span className="text-xs opacity-60">
-                      {formatPrice(item.prices[temp] || 0)}
+                      {formatPrice(item.prices[variant] || 0)}
                     </span>
                   </button>
                 ))}
@@ -137,8 +136,8 @@ export default function ItemModal({ item, category, onClose }: ItemModalProps) {
 
           {/* Addons */}
           <div>
-            <h3 className="text-sm font-semibold text-cameron-800 mb-3">
-              {language === 'th' ? 'ท็อปปิ้ง' : 'Toppings'}
+            <h3 className="text-sm font-semibold text-brand-800 mb-3">
+              Add-ons
             </h3>
             <div className="space-y-2">
               {addonOptions.map((addon) => {
@@ -150,17 +149,17 @@ export default function ItemModal({ item, category, onClose }: ItemModalProps) {
                     className={cn(
                       'w-full flex items-center justify-between p-3 rounded-xl transition-all border-2',
                       isSelected
-                        ? 'border-cameron-600 bg-cameron-50'
+                        ? 'border-brand-600 bg-brand-50'
                         : 'border-gray-100 bg-gray-50/50 hover:border-gray-200'
                     )}
                   >
-                    <span className="text-sm font-medium text-cameron-800">
-                      {language === 'th' ? addon.name_th : addon.name_en}
+                    <span className="text-sm font-medium text-brand-800">
+                      {addon.name}
                     </span>
                     <span
                       className={cn(
                         'text-sm font-semibold',
-                        isSelected ? 'text-cameron-700' : 'text-gray-400'
+                        isSelected ? 'text-brand-700' : 'text-gray-400'
                       )}
                     >
                       +{formatPrice(addon.price)}
@@ -173,24 +172,22 @@ export default function ItemModal({ item, category, onClose }: ItemModalProps) {
 
           {/* Notes */}
           <div>
-            <h3 className="text-sm font-semibold text-cameron-800 mb-2">
-              {language === 'th' ? 'หมายเหตุ' : 'Special Notes'}
+            <h3 className="text-sm font-semibold text-brand-800 mb-2">
+              Special Notes
             </h3>
             <input
               type="text"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder={
-                language === 'th' ? 'เช่น หวานน้อย, ไม่ใส่น้ำแข็ง' : 'e.g. less sugar, no ice'
-              }
-              className="w-full px-4 py-3 rounded-xl border-2 border-gray-100 bg-gray-50/50 text-sm focus:border-cameron-400 focus:bg-white focus:outline-none transition-all placeholder:text-gray-300"
+              placeholder="e.g. no ice, extra hot, allergies..."
+              className="w-full px-4 py-3 rounded-xl border-2 border-gray-100 bg-gray-50/50 text-sm focus:border-brand-400 focus:bg-white focus:outline-none transition-all placeholder:text-gray-300"
             />
           </div>
 
           {/* Quantity */}
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-cameron-800">
-              {language === 'th' ? 'จำนวน' : 'Quantity'}
+            <h3 className="text-sm font-semibold text-brand-800">
+              Quantity
             </h3>
             <div className="flex items-center gap-3">
               <button
@@ -199,14 +196,14 @@ export default function ItemModal({ item, category, onClose }: ItemModalProps) {
               >
                 <Minus className="w-4 h-4 text-gray-600" />
               </button>
-              <span className="w-8 text-center font-bold text-cameron-900 text-lg">
+              <span className="w-8 text-center font-bold text-brand-900 text-lg">
                 {quantity}
               </span>
               <button
                 onClick={() => setQuantity(quantity + 1)}
-                className="w-9 h-9 rounded-xl bg-cameron-100 hover:bg-cameron-200 flex items-center justify-center transition-colors"
+                className="w-9 h-9 rounded-xl bg-brand-100 hover:bg-brand-200 flex items-center justify-center transition-colors"
               >
-                <Plus className="w-4 h-4 text-cameron-700" />
+                <Plus className="w-4 h-4 text-brand-700" />
               </button>
             </div>
           </div>
@@ -216,12 +213,10 @@ export default function ItemModal({ item, category, onClose }: ItemModalProps) {
         <div className="sticky bottom-0 p-4 bg-white border-t border-gray-100">
           <button
             onClick={handleAdd}
-            className="w-full flex items-center justify-center gap-3 bg-cameron-700 hover:bg-cameron-800 text-white py-4 rounded-2xl font-semibold text-base shadow-lg shadow-cameron-700/25 transition-all active:scale-[0.98]"
+            className="w-full flex items-center justify-center gap-3 bg-brand-700 hover:bg-brand-800 text-white py-4 rounded-2xl font-semibold text-base shadow-lg shadow-brand-700/25 transition-all active:scale-[0.98]"
           >
             <ShoppingBag className="w-5 h-5" />
-            <span>
-              {language === 'th' ? 'เพิ่มลงตะกร้า' : 'Add to Cart'}
-            </span>
+            <span>Add to Cart</span>
             <span className="bg-white/20 px-3 py-0.5 rounded-lg text-sm">
               {formatPrice(totalPrice)}
             </span>

@@ -3,14 +3,16 @@ import { Toaster } from 'sonner';
 import AuthProvider from '@/components/providers/AuthProvider';
 import './globals.css';
 
+const shopName = process.env.NEXT_PUBLIC_SHOP_NAME || 'My Shop';
+const shopDescription =
+  process.env.NEXT_PUBLIC_SHOP_DESCRIPTION || 'Order online from our menu.';
+
 export const metadata: Metadata = {
-  title: 'Cameron Natural | ชาคาเมรอน พัทยา',
-  description:
-    'Order bubble tea, matcha, coffee & Italian soda online from Cameron Natural Pattaya. Fresh, natural, premium drinks.',
-  keywords: ['bubble tea', 'matcha', 'cameron natural', 'pattaya', 'ชาคาเมรอน', 'พัทยา'],
+  title: shopName,
+  description: shopDescription,
   openGraph: {
-    title: 'Cameron Natural | ชาคาเมรอน',
-    description: 'Premium bubble tea & matcha drinks in Pattaya',
+    title: shopName,
+    description: shopDescription,
     type: 'website',
   },
 };
@@ -21,14 +23,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="th" suppressHydrationWarning>
-      <body className="min-h-screen bg-cream leaf-pattern antialiased">
+    <html lang="en" suppressHydrationWarning>
+      <body className="min-h-screen bg-surface surface-pattern antialiased">
         <AuthProvider>{children}</AuthProvider>
         <Toaster
           position="top-center"
           toastOptions={{
             style: {
-              background: '#1a6b28',
+              background: '#4338ca',
               color: '#fff',
               border: 'none',
               borderRadius: '12px',

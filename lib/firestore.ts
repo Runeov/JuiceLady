@@ -163,3 +163,8 @@ export async function getOrdersByUserId(
     } as Order;
   });
 }
+
+// ── Inventory ───────────────────────────────────────────
+export async function updateMenuItemStock(id: string, stock: number): Promise<void> {
+  await updateDoc(doc(db, 'menuItems', id), { stock, updatedAt: Timestamp.now() });
+}

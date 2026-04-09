@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { Loader2, Search, RefreshCw } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, formatPrice } from '@/lib/utils';
 import { toast } from 'sonner';
 import { useAuth } from '@/components/providers/AuthProvider';
 import { auth } from '@/lib/firebase';
@@ -64,7 +64,7 @@ export default function AdminOrdersPage() {
   const [walkInEmail, setWalkInEmail] = useState('');
   const [walkInNote, setWalkInNote] = useState('');
   const [walkInItems, setWalkInItems] = useState<WalkInItem[]>([
-    { name: 'Walk-in item', price: 30, qty: 1 },
+    { name: 'Walk-in item', price: 5, qty: 1 },
   ]);
   const [creatingOrder, setCreatingOrder] = useState(false);
 
@@ -203,9 +203,7 @@ export default function AdminOrdersPage() {
       const token = await getIdToken();
       const items = walkInItems.map((item, idx) => ({
         menuItemId: `walkin-${Date.now()}-${idx}`,
-        name_en: item.name.trim(),
-        name_th: item.name.trim(),
-        temp: 'iced',
+        name: item.name.trim(),
         size: 'M',
         addons: [],
         quantity: item.qty,
@@ -235,7 +233,7 @@ export default function AdminOrdersPage() {
       if (!res.ok) throw new Error(data.error || 'Failed to create walk-in order');
       toast.success('Walk-in order created');
       fetchOrders();
-      setWalkInItems([{ name: 'Walk-in item', price: 30, qty: 1 }]);
+      setWalkInItems([{ name: 'Walk-in item', price: 5, qty: 1 }]);
       setWalkInNote('');
     } catch (error: any) {
       console.error('Walk-in order error:', error);
@@ -248,7 +246,7 @@ export default function AdminOrdersPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 text-cameron-600 animate-spin" />
+        <Loader2 className="w-8 h-8 text-brand-600 animate-spin" />
       </div>
     );
   }
@@ -294,7 +292,7 @@ export default function AdminOrdersPage() {
               </button>
               <button
                 onClick={handleCreateUserAndSendEmail}
-                className="px-3 py-2 text-xs font-medium rounded-lg bg-cameron-700 text-white hover:bg-cameron-800 transition-colors"
+                className="px-3 py-2 text-xs font-medium rounded-lg bg-brand-700 text-white hover:bg-brand-800 transition-colors"
               >
                 Create + send email
               </button>
@@ -396,7 +394,7 @@ export default function AdminOrdersPage() {
             >
               Add item
             </button>
-            <div className="text-sm font-semibold text-gray-900">Total: ฿{walkInTotal}</div>
+            <div className="text-sm font-semibold text-gray-900">Total: {formatPrice(walkInTotal)}</div>
           </div>
         </div>
 
@@ -404,7 +402,7 @@ export default function AdminOrdersPage() {
           <button
             onClick={handleCreateWalkInOrder}
             disabled={creatingOrder}
-            className="px-4 py-2 rounded-lg bg-cameron-700 text-white text-sm font-medium hover:bg-cameron-800 disabled:opacity-60"
+            className="px-4 py-2 rounded-lg bg-brand-700 text-white text-sm font-medium hover:bg-brand-800 disabled:opacity-60"
           >
             {creatingOrder ? 'Saving...' : 'Create walk-in order'}
           </button>
@@ -425,7 +423,7 @@ export default function AdminOrdersPage() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search by name or order ID..."
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm focus:border-cameron-400 focus:outline-none"
+            className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm focus:border-brand-400 focus:outline-none"
           />
         </div>
         <div className="flex gap-1 overflow-x-auto">
@@ -436,7 +434,7 @@ export default function AdminOrdersPage() {
               className={cn(
                 'px-3 py-2 rounded-xl text-xs font-medium whitespace-nowrap transition-all border',
                 statusFilter === status
-                  ? 'bg-cameron-700 text-white border-cameron-700'
+                  ? 'bg-brand-700 text-white border-brand-700'
                   : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
               )}
             >
@@ -488,7 +486,7 @@ export default function AdminOrdersPage() {
                       <p className="font-mono text-xs text-gray-500">#{order.id.slice(0, 8)}</p>
                       <p className="text-[10px] text-gray-400">
                         {order.createdAt
-                          ? new Date(order.createdAt).toLocaleString('th-TH', {
+                          ? new Date(order.createdAt).toLocaleString(undefined, {
                               day: '2-digit',
                               month: 'short',
                               hour: '2-digit',
@@ -522,7 +520,7 @@ export default function AdminOrdersPage() {
                           isServed && 'line-through text-gray-400'
                         )}
                       >
-                        {order.items?.map((i: any) => `${i.quantity}x ${i.name_en}`).join(', ')}
+                        {order.items?.map((i: any) => `${i.quantity}x ${i.name}`).join(', ')}
                       </p>
                     </td>
                     <td className="px-4 py-3 text-right">
@@ -532,7 +530,7 @@ export default function AdminOrdersPage() {
                           isServed && 'line-through text-gray-400'
                         )}
                       >
-                        ฿{order.total}
+                        {formatPrice(order.total)}
                       </span>
                     </td>
                     <td className="px-4 py-3 text-center">
@@ -561,7 +559,7 @@ export default function AdminOrdersPage() {
                     <td className="px-4 py-3 text-center">
                       <button
                         onClick={() => setSelectedOrder(selectedOrder?.id === order.id ? null : order)}
-                        className="text-xs text-cameron-600 hover:text-cameron-700 font-medium"
+                        className="text-xs text-brand-600 hover:text-brand-700 font-medium"
                       >
                         {selectedOrder?.id === order.id ? 'Hide' : 'Details'}
                       </button>
@@ -601,21 +599,20 @@ export default function AdminOrdersPage() {
             {selectedOrder.items?.map((item: any, i: number) => (
               <div key={i} className="flex justify-between text-sm py-1 border-b border-gray-50 last:border-0">
                 <div>
-                  <span className="font-medium">{item.quantity}x {item.name_en}</span>
-                  <span className="text-gray-400 text-xs ml-2">({item.name_th})</span>
+                  <span className="font-medium">{item.quantity}x {item.name}</span>
                   {item.addons?.length > 0 && (
                     <p className="text-xs text-amber-600">
-                      + {item.addons.map((a: any) => a.name_en).join(', ')}
+                      + {item.addons.map((a: any) => a.name).join(', ')}
                     </p>
                   )}
                   {item.notes && <p className="text-xs text-gray-400 italic">{item.notes}</p>}
                 </div>
-                <span className="font-medium">฿{item.totalPrice}</span>
+                <span className="font-medium">{formatPrice(item.totalPrice)}</span>
               </div>
             ))}
           </div>
           <div className="mt-3 pt-3 border-t border-gray-200 flex justify-end">
-            <span className="text-lg font-bold text-gray-900">Total: ฿{selectedOrder.total}</span>
+            <span className="text-lg font-bold text-gray-900">Total: {formatPrice(selectedOrder.total)}</span>
           </div>
         </div>
       )}

@@ -10,7 +10,7 @@ import {
   XCircle,
   Loader2,
 } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, formatPrice } from '@/lib/utils';
 
 interface OrderSummary {
   id: string;
@@ -38,7 +38,6 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     fetchOrders();
-    // Poll every 30 seconds for new orders
     const interval = setInterval(fetchOrders, 30000);
     return () => clearInterval(interval);
   }, []);
@@ -83,7 +82,7 @@ export default function AdminDashboard() {
   const stats = [
     {
       label: "Today's Revenue",
-      value: `฿${todayRevenue.toLocaleString()}`,
+      value: formatPrice(todayRevenue),
       icon: DollarSign,
       color: 'bg-green-50 text-green-600',
     },
@@ -102,8 +101,8 @@ export default function AdminDashboard() {
     {
       label: 'Avg Order',
       value: todayOrders.length
-        ? `฿${Math.round(todayRevenue / todayOrders.length)}`
-        : '฿0',
+        ? formatPrice(Math.round(todayRevenue / todayOrders.length))
+        : formatPrice(0),
       icon: TrendingUp,
       color: 'bg-purple-50 text-purple-600',
     },
@@ -112,7 +111,7 @@ export default function AdminDashboard() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 text-cameron-600 animate-spin" />
+        <Loader2 className="w-8 h-8 text-brand-600 animate-spin" />
       </div>
     );
   }
@@ -143,7 +142,7 @@ export default function AdminDashboard() {
           <h2 className="text-lg font-bold text-gray-900">Recent Orders</h2>
           <button
             onClick={fetchOrders}
-            className="text-xs text-cameron-600 hover:text-cameron-700 font-medium"
+            className="text-xs text-brand-600 hover:text-brand-700 font-medium"
           >
             Refresh
           </button>
@@ -177,7 +176,7 @@ export default function AdminDashboard() {
                     <span className={cn('text-[10px] font-medium px-2 py-0.5 rounded-full',
                       order.paymentStatus === 'paid' ? 'bg-green-50 text-green-600' : 'bg-gray-50 text-gray-500'
                     )}>
-                      {order.paymentMethod === 'cash' ? '💵 cash' : '💳 card'}{' '}
+                      {order.paymentMethod === 'cash' ? 'cash' : order.paymentMethod === 'promptpay' ? 'QR' : 'card'}{' '}
                       {order.paymentStatus}
                     </span>
                   </div>
@@ -195,16 +194,16 @@ export default function AdminDashboard() {
                       isServed && 'line-through'
                     )}
                   >
-                    {order.items?.map((i: any) => `${i.quantity}x ${i.name_en}`).join(', ')}
+                    {order.items?.map((i: any) => `${i.quantity}x ${i.name}`).join(', ')}
                   </p>
                 </div>
 
                 {/* Price */}
                 <div className="text-right shrink-0">
-                  <p className="font-bold text-gray-900">฿{order.total}</p>
+                  <p className="font-bold text-gray-900">{formatPrice(order.total)}</p>
                   <p className="text-[10px] text-gray-400">
                     {order.createdAt
-                      ? new Date(order.createdAt).toLocaleTimeString('th-TH', {
+                      ? new Date(order.createdAt).toLocaleTimeString([], {
                           hour: '2-digit',
                           minute: '2-digit',
                         })

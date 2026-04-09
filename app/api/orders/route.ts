@@ -3,6 +3,9 @@ import { adminDb } from '@/lib/firebase-admin';
 import { stripe } from '@/lib/stripe';
 import { Timestamp } from 'firebase-admin/firestore';
 
+const currency = process.env.NEXT_PUBLIC_CURRENCY?.toLowerCase() || 'usd';
+const currencyMultiplier = Number(process.env.NEXT_PUBLIC_CURRENCY_MULTIPLIER || '100');
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -32,7 +35,7 @@ export async function POST(request: NextRequest) {
       subtotal: total,
       total,
       paymentMethod,
-      paymentStatus: paymentMethod === 'cash' ? 'pending' : 'pending',
+      paymentStatus: 'pending',
       orderStatus: 'pending',
       customerName,
       customerPhone,
@@ -41,6 +44,7 @@ export async function POST(request: NextRequest) {
       userPhone: userPhone || null,
       customerNote: customerNote || null,
       stripeSessionId: null,
+      promptpayRef: null,
       createdAt: Timestamp.now(),
       updatedAt: Timestamp.now(),
     };
@@ -52,14 +56,14 @@ export async function POST(request: NextRequest) {
     if (paymentMethod === 'stripe') {
       const lineItems = items.map((item: any) => ({
         price_data: {
-          currency: 'thb',
+          currency,
           product_data: {
-            name: `${item.name_en} (${item.name_th})`,
+            name: item.name,
             description: item.addons?.length
-              ? `Toppings: ${item.addons.map((a: any) => a.name_en).join(', ')}`
+              ? `Add-ons: ${item.addons.map((a: any) => a.name).join(', ')}`
               : undefined,
           },
-          unit_amount: item.unitPrice * 100, // Stripe uses smallest unit (satang)
+          unit_amount: Math.round(item.unitPrice * currencyMultiplier),
         },
         quantity: item.quantity,
       }));
@@ -84,6 +88,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         orderId,
         checkoutUrl: session.url,
+      });
+    }
+
+    // PromptPay / QR payment - return order ID (payment confirmation handled separately)
+    if (paymentMethod === 'promptpay') {
+      const promptpayId = process.env.NEXT_PUBLIC_PROMPTPAY_ID;
+      return NextResponse.json({
+        orderId,
+        promptpayId,
+        message: 'Scan QR code to pay',
       });
     }
 

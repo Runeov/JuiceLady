@@ -15,9 +15,15 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    match /addons/{doc} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
     match /orders/{doc} {
       allow read: if isAdmin() || (request.auth != null && request.auth.uid == resource.data.userId);
-      allow write: if isAdmin();
+      allow create: if true;
+      allow update: if isAdmin();
     }
   }
 }

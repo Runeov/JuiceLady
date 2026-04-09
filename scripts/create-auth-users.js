@@ -64,15 +64,16 @@ async function upsertUser({ email, password, displayName, claims }) {
 (async () => {
   const password = 'password';
   await upsertUser({
-    email: 'testuser@test.th',
+    email: 'testuser@test.com',
     password,
     displayName: 'Test User',
     claims: null,
   });
   await upsertUser({
-    email: 'testadmin@test.th',
+    email: 'testadmin@test.com',
     password,
     displayName: 'Test Admin',
     claims: { admin: true },
   });
+  console.log('\nDone! You can now sign in at /account');
 })();

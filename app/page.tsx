@@ -6,25 +6,23 @@ import Hero from '@/components/menu/Hero';
 import CategoryTabs from '@/components/menu/CategoryTabs';
 import MenuItemCard from '@/components/menu/MenuItemCard';
 import ItemModal from '@/components/menu/ItemModal';
-import { useCartStore } from '@/lib/store';
 import type { MenuItem, Category } from '@/types';
 import {
   categories as categoryData,
-  milkTeaItems,
-  coffeeItems,
-  italianSodaItems,
-  otherItems,
-  matchaItems,
+  hotDrinkItems,
+  coldDrinkItems,
+  foodItems,
+  dessertItems,
 } from '@/data/menu-data';
 import { getCategories, getMenuItems } from '@/lib/firestore';
+import { shopConfig } from '@/lib/config';
 
 // Build local data with IDs (in production, this comes from Firestore)
 const categoriesWithIds: Category[] = [
-  { ...categoryData[0], id: 'milk-tea' },
-  { ...categoryData[1], id: 'coffee' },
-  { ...categoryData[2], id: 'italian-soda' },
-  { ...categoryData[3], id: 'other' },
-  { ...categoryData[4], id: 'matcha' },
+  { ...categoryData[0], id: 'hot-drinks' },
+  { ...categoryData[1], id: 'cold-drinks' },
+  { ...categoryData[2], id: 'food' },
+  { ...categoryData[3], id: 'desserts' },
 ];
 
 function addIdsToItems(items: Omit<MenuItem, 'id'>[], prefix: string): MenuItem[] {
@@ -32,15 +30,13 @@ function addIdsToItems(items: Omit<MenuItem, 'id'>[], prefix: string): MenuItem[
 }
 
 const fallbackItems: MenuItem[] = [
-  ...addIdsToItems(milkTeaItems, 'mt'),
-  ...addIdsToItems(coffeeItems, 'cf'),
-  ...addIdsToItems(italianSodaItems, 'is'),
-  ...addIdsToItems(otherItems, 'ot'),
-  ...addIdsToItems(matchaItems, 'ma'),
+  ...addIdsToItems(hotDrinkItems, 'hd'),
+  ...addIdsToItems(coldDrinkItems, 'cd'),
+  ...addIdsToItems(foodItems, 'fd'),
+  ...addIdsToItems(dessertItems, 'ds'),
 ];
 
 export default function MenuPage() {
-  const { language } = useCartStore();
   const [categories, setCategories] = useState<Category[]>(categoriesWithIds);
   const [items, setItems] = useState<MenuItem[]>(fallbackItems);
   const [activeCategory, setActiveCategory] = useState(categoriesWithIds[0].id);
@@ -85,12 +81,11 @@ export default function MenuPage() {
       <main className="max-w-5xl mx-auto px-4 py-6">
         {/* Section title */}
         <div className="mb-4">
-          <h2 className="font-display text-xl font-bold text-cameron-900">
-            {language === 'th' ? activeCat.name_th : activeCat.name_en}
+          <h2 className="font-display text-xl font-bold text-brand-900">
+            {activeCat.name}
           </h2>
-          <p className="text-xs text-cameron-500 mt-0.5">
-            {filteredItems.length}{' '}
-            {language === 'th' ? 'รายการ' : 'items'}
+          <p className="text-xs text-brand-500 mt-0.5">
+            {filteredItems.length} items
           </p>
         </div>
 
@@ -112,9 +107,10 @@ export default function MenuPage() {
       </main>
 
       {/* Footer */}
-      <footer className="max-w-5xl mx-auto px-4 py-8 text-center border-t border-cameron-100">
-        <p className="text-xs text-cameron-400">
-          Cameron Natural — {language === 'th' ? 'สาขาพัทยา' : 'Pattaya Branch'} — 063-296-9062
+      <footer className="max-w-5xl mx-auto px-4 py-8 text-center border-t border-brand-100">
+        <p className="text-xs text-brand-400">
+          {shopConfig.name}
+          {shopConfig.phone ? ` — ${shopConfig.phone}` : ''}
         </p>
       </footer>
 

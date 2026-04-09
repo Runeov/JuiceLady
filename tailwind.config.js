@@ -7,31 +7,30 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        cameron: {
-          50: '#f0fdf0',
-          100: '#dcfce7',
-          200: '#bbf7d0',
-          300: '#86efac',
-          400: '#4ade80',
-          500: '#2d8c3c',
-          600: '#1a6b28',
-          700: '#15532e',
-          800: '#0f3d22',
-          900: '#0a2916',
-          950: '#051a0d',
+        // Customize these to match your brand
+        brand: {
+          50: '#f0f4ff',
+          100: '#e0e8ff',
+          200: '#c7d2fe',
+          300: '#a5b4fc',
+          400: '#818cf8',
+          500: '#6366f1',
+          600: '#4f46e5',
+          700: '#4338ca',
+          800: '#3730a3',
+          900: '#312e81',
+          950: '#1e1b4b',
         },
-        matcha: {
-          light: '#c5e17a',
-          DEFAULT: '#7ab648',
-          dark: '#4a7c1f',
+        accent: {
+          light: '#86efac',
+          DEFAULT: '#22c55e',
+          dark: '#15803d',
         },
-        cream: '#fef9f0',
-        bark: '#3e2723',
+        surface: '#f8fafc',
       },
       fontFamily: {
         display: ['var(--font-display)', 'serif'],
         body: ['var(--font-body)', 'sans-serif'],
-        thai: ['var(--font-thai)', 'sans-serif'],
       },
       borderRadius: {
         '4xl': '2rem',

@@ -1,224 +1,158 @@
-# 🍃 Cameron Natural — Online Ordering System
+# Universal Order System
 
-A full-stack online ordering system for **Cameron Natural** (ชาคาเมรอน) bubble tea shop in Pattaya, Thailand.
+A full-stack, white-label online ordering system. Configure your shop name, currency, colors, and menu — deploy anywhere.
 
-Built with **Next.js 15**, **Tailwind CSS**, **Firebase Firestore**, and **Stripe Payments**.
+Built with **Next.js 15**, **Tailwind CSS**, **Firebase**, and **Stripe**.
 
 ---
 
 ## Features
 
-### 🛒 Customer Ordering
-- Beautiful bilingual menu (Thai/English) with category navigation
-- Item customization: temperature (Hot/Iced/Frappé), toppings, notes
+### Customer Ordering
+- Responsive menu with category navigation
+- Item customization: variants (Hot/Iced/Frappe), add-ons, notes
 - Shopping cart with quantity management
-- Checkout with **Cash** or **Stripe** (credit/debit card) payment options
+- Multiple payment methods: **Cash**, **Stripe** (card), **PromptPay/QR** (optional)
 - Order confirmation with tracking ID
+- Order history for returning customers (Firebase Auth)
 
-### 👨‍💼 Admin Panel (`/admin`)
-- **Dashboard**: Real-time stats — today's revenue, orders, pending count
-- **Orders**: Full order management with status workflow (Pending → Confirmed → Preparing → Ready → Completed)
-- **Menu**: Toggle item availability on/off in real-time
-- **Analytics**: Revenue charts, payment method breakdown, top-selling items
-- **Notifications**: Audible alert + optional desktop notifications for new orders
-- **Pending Badge**: Live count of active orders in the admin nav
+### Admin Panel (`/admin`)
+- **Dashboard**: Real-time stats — revenue, orders, pending count
+- **Orders**: Full order management with status workflow (Pending > Confirmed > Preparing > Ready > Completed)
+- **Walk-in Orders**: Create orders for in-store customers
+- **Menu Management**: Add/edit/delete items, toggle availability, upload images to Firebase Storage
+- **Inventory**: Track stock levels, low-stock alerts, bulk stock updates
+- **Customers**: View customer history, order aggregates
+- **Analytics**: Revenue charts, payment breakdown, top items, CSV export
+- **Notifications**: Audible alert + desktop notifications for new orders
 
-### 🔧 Technical
-- Firebase Firestore for real-time data persistence
-- Stripe Checkout Sessions for secure card payments
-- Stripe Webhooks for automatic payment confirmation
-- Zustand for client-side state management
-- Fully responsive (mobile-first design)
+### Integrations
+- **Firebase Auth**: Email/password + phone auth, admin custom claims
+- **Firebase Firestore**: Real-time data persistence
+- **Firebase Storage**: Menu item image uploads
+- **Stripe**: Secure card payments via Checkout Sessions + webhooks
+- **PromptPay/QR**: Thai QR payment support (configurable)
+- **LINE**: Admin order notifications via LINE Messaging API
+- **SMS**: Customer order status updates via Twilio
+
+### Technical
 - TypeScript throughout
+- Zustand for client-side state management
+- Configurable via environment variables (shop name, currency, locale)
+- Customizable color theme via Tailwind config
+- Mobile-first responsive design
 
 ---
 
-## Menu Categories
-
-| Category | Items | Price Range |
-|----------|-------|-------------|
-| 🍵 Milk & Tea | 13 items | ฿30–45 |
-| ☕ Coffee | 5 items | ฿30–50 |
-| 🥤 Italian Soda | 12 items | ฿30–45 |
-| 🧋 Other Drinks | 5 items | ฿35–50 |
-| 🍃 Matcha | 8 items | ฿45–50 |
-
-**Toppings**: Pearls (+฿5), Jokés (+฿10), Spin (+฿10), Cream Cheese (+฿15), Whipping (+฿15)
-
----
-
-## Setup Guide
+## Quick Start
 
 ### Prerequisites
 - Node.js 18+
 - A Firebase project (free tier works)
-- A Stripe account (test mode for development)
+- A Stripe account (optional, for card payments)
 
-### 1. Clone & Install
+### 1. Install
 
 ```bash
-cd cameron-natural
 npm install
 ```
 
-### 2. Firebase Setup
-
-1. Go to [Firebase Console](https://console.firebase.google.com) and create a new project
-2. Enable **Firestore Database** (start in test mode)
-3. Go to Project Settings → General → copy your web app config
-4. Go to Project Settings → Service Accounts → Generate new private key (download JSON)
-5. Create **Firestore indexes** (Composite):
-   - Collection: `orders` — Fields: `createdAt` (Descending)
-   - Collection: `orders` — Fields: `createdAt` (Ascending), `createdAt` (Descending)
-   - Collection: `menuItems` — Fields: `categoryId` (Ascending), `order` (Ascending)
-6. Deploy Firestore rules (public read, admin write):
-   ```bash
-   firebase deploy --only firestore:rules
-   ```
-
-### 3. Stripe Setup
-
-1. Go to [Stripe Dashboard](https://dashboard.stripe.com)
-2. Get your **Publishable key** and **Secret key** from Developers → API Keys
-3. For webhooks:
-   - In development: Install [Stripe CLI](https://stripe.com/docs/stripe-cli) and run:
-     ```bash
-     stripe listen --forward-to localhost:3000/api/webhook
-     ```
-   - In production: Create a webhook endpoint at `https://yourdomain.com/api/webhook`
-   - Select event: `checkout.session.completed`
-
-### 4. Environment Variables
+### 2. Configure
 
 ```bash
 cp .env.example .env.local
 ```
 
-Fill in all values in `.env.local`:
+Edit `.env.local` with your Firebase credentials and shop settings. See `.env.example` for all options.
 
-```env
-# Firebase Client
-NEXT_PUBLIC_FIREBASE_API_KEY=AIza...
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=your-project-id
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your-project.appspot.com
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=123456789
-NEXT_PUBLIC_FIREBASE_APP_ID=1:123456789:web:abc123
-
-# Firebase Admin (from service account JSON)
-FIREBASE_ADMIN_PROJECT_ID=your-project-id
-FIREBASE_ADMIN_CLIENT_EMAIL=firebase-adminsdk-xxx@your-project.iam.gserviceaccount.com
-FIREBASE_ADMIN_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
-
-# Stripe
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
-STRIPE_SECRET_KEY=sk_test_...
-STRIPE_WEBHOOK_SECRET=whsec_...
-
-# App
-NEXT_PUBLIC_BASE_URL=http://localhost:3000
-NEXT_PUBLIC_SHOP_NAME=Cameron Natural
-NEXT_PUBLIC_SHOP_PHONE=063-296-9062
-```
-
-### 5. Seed the Database
+### 3. Seed the Database
 
 ```bash
 npm run seed
 ```
 
-This populates Firestore with all menu categories, items, and addons.
-
-### 6. Run the App
-
-```bash
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) for the customer menu.
-Open [http://localhost:3000/admin](http://localhost:3000/admin) for the admin panel.
-
----
-
-## Admin Usage Guide
-
-### 1) Create an Admin Account
-The admin area is protected by Firebase Auth custom claims (`admin: true`).
-
-Use the included script to create a test admin user:
+### 4. Create Admin User
 
 ```bash
 node scripts/create-auth-users.js
 ```
 
-Default admin credentials from the script:
-- Email: `testadmin@test.th`
-- Password: `password`
+Default credentials:
+- Admin: `testadmin@test.com` / `password`
+- User: `testuser@test.com` / `password`
 
-You can edit `scripts/create-auth-users.js` to add your own admin email/password or set claims for existing users.
+### 5. Run
 
-### 2) Sign In
-Go to `http://localhost:3000/account` and sign in with the admin user.
+```bash
+npm run dev
+```
 
-### 3) Admin Dashboard (`/admin`)
-- See recent orders and key stats.
-- Orders marked **Completed** are visually crossed off (served).
+- Customer menu: [http://localhost:3000](http://localhost:3000)
+- Admin panel: [http://localhost:3000/admin](http://localhost:3000/admin)
 
-### 4) Orders Page (`/admin/orders`)
-- View all incoming orders.
-- Change status as drinks are prepared:
-  Pending → Confirmed → Preparing → Ready → Completed
-- Completed orders are crossed off.
+---
 
-### 5) New Order Notifications
-- When a new order arrives, the admin will hear a short beep and see a toast.
-- Click **Enable** on the notification prompt to allow desktop notifications.
+## Customization
 
-### 6) Pending Badge
-- The Orders nav shows a live badge of active orders (Pending/Confirmed/Preparing/Ready).
+### Branding
+Edit `tailwind.config.js` to change the color theme:
+```js
+brand: { 50: '#f0f4ff', ..., 900: '#312e81' },
+accent: { light: '#86efac', DEFAULT: '#22c55e', dark: '#15803d' },
+```
+
+### Shop Settings
+All shop-specific settings are in `.env.local`:
+```env
+NEXT_PUBLIC_SHOP_NAME=My Shop
+NEXT_PUBLIC_CURRENCY=USD
+NEXT_PUBLIC_CURRENCY_SYMBOL=$
+NEXT_PUBLIC_LOCALE=en-US
+```
+
+### Menu
+Edit `data/menu-data.ts` for local fallback data, or manage everything through the admin panel once seeded.
 
 ---
 
 ## Project Structure
 
 ```
-cameron-natural/
-├── app/
-│   ├── page.tsx              # Customer menu (home)
-│   ├── cart/page.tsx         # Shopping cart
-│   ├── checkout/
-│   │   ├── page.tsx          # Checkout (payment selection)
-│   │   └── success/page.tsx  # Post-payment confirmation
-│   ├── admin/
-│   │   ├── page.tsx          # Admin dashboard
-│   │   ├── orders/page.tsx   # Order management
-│   │   ├── menu/page.tsx     # Menu item management
-│   │   └── analytics/page.tsx # Sales analytics
-│   ├── api/
-│   │   ├── orders/
-│   │   │   ├── route.ts      # POST create, GET list orders
-│   │   │   └── [id]/route.ts # PATCH update, GET single order
-│   │   └── webhook/route.ts  # Stripe webhook handler
-│   ├── layout.tsx
-│   └── globals.css
-├── components/
-│   ├── layout/Header.tsx
-│   └── menu/
-│       ├── Hero.tsx
-│       ├── CategoryTabs.tsx
-│       ├── MenuItemCard.tsx
-│       └── ItemModal.tsx
-├── lib/
-│   ├── firebase.ts           # Client SDK init
-│   ├── firebase-admin.ts     # Admin SDK init
-│   ├── stripe.ts             # Stripe init
-│   ├── firestore.ts          # Firestore operations
-│   ├── store.ts              # Zustand cart store
-│   └── utils.ts              # Helpers
-├── data/menu-data.ts         # Seed data (all menu items)
-├── types/index.ts            # TypeScript types
-├── scripts/seed-firestore.ts # Database seeder
-└── .env.example
+app/
+  page.tsx              # Customer menu
+  cart/page.tsx         # Shopping cart
+  checkout/page.tsx     # Checkout + payment
+  account/page.tsx      # Auth + order history
+  admin/
+    page.tsx            # Dashboard
+    orders/page.tsx     # Order management
+    menu/page.tsx       # Menu CRUD
+    inventory/page.tsx  # Stock management
+    analytics/page.tsx  # Sales reports + CSV export
+    customers/page.tsx  # Customer history
+  api/
+    orders/             # Order CRUD
+    webhook/            # Stripe webhooks
+    admin/              # Admin-only endpoints
+components/
+  layout/Header.tsx
+  menu/                 # Hero, CategoryTabs, MenuItemCard, ItemModal
+  admin/                # AdminGuard, notifications, badges
+  providers/            # AuthProvider
+lib/
+  config.ts             # Central shop configuration
+  firebase.ts           # Client SDK
+  firebase-admin.ts     # Admin SDK
+  firestore.ts          # Database operations
+  notifications.ts      # LINE/SMS notification service
+  store.ts              # Zustand cart store
+  stripe.ts             # Stripe init
+  utils.ts              # Helpers + CSV export
+data/menu-data.ts       # Sample menu data
+types/index.ts          # TypeScript types
+scripts/
+  seed-firestore.ts     # Database seeder
+  create-auth-users.js  # Admin user setup
 ```
 
 ---
@@ -229,32 +163,12 @@ cameron-natural/
 
 1. Push to GitHub
 2. Import to [Vercel](https://vercel.com)
-3. Add all environment variables in Vercel dashboard
+3. Add all environment variables
 4. Set up Stripe webhook for your production URL
 5. Done!
-
-### Firebase Hosting
-
-```bash
-npm run build
-firebase deploy
-```
-
----
-
-## Next Steps / Improvements
-
-- [ ] Add Firebase Auth for admin login protection
-- [ ] Add real-time order notifications (Firestore listeners)
-- [ ] Add drink images (upload to Firebase Storage)
-- [ ] Add PromptPay / Thai QR payment integration
-- [ ] Add order history for returning customers
-- [ ] Add SMS/LINE notifications for order status updates
-- [ ] Add inventory management
-- [ ] Export sales reports to CSV/Excel
 
 ---
 
 ## License
 
-Private — Cameron Natural © 2026
+MIT

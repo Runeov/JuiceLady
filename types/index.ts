@@ -1,50 +1,54 @@
-export type DrinkSize = 'S' | 'M' | 'bucket' | 'giraffe';
-export type DrinkTemp = 'hot' | 'iced' | 'frappe';
-export type PaymentMethod = 'stripe' | 'cash';
+export type ItemSize = 'S' | 'M' | 'L' | 'XL';
+export type ItemVariant = 'hot' | 'iced' | 'frappe';
+export type PaymentMethod = 'stripe' | 'cash' | 'promptpay';
 export type OrderStatus = 'pending' | 'confirmed' | 'preparing' | 'ready' | 'completed' | 'cancelled';
+export type NotificationChannel = 'email' | 'sms' | 'line';
 
 export interface Category {
   id: string;
-  name_th: string;
-  name_en: string;
+  name: string;
+  name_secondary?: string;
   order: number;
-  priceColumns: DrinkTemp[];
+  priceColumns: ItemVariant[];
   icon?: string;
 }
 
 export interface MenuItem {
   id: string;
   categoryId: string;
-  name_th: string;
-  name_en: string;
-  prices: Partial<Record<DrinkTemp, number>>;
-  singlePrice?: number; // for matcha items with one price
+  name: string;
+  name_secondary?: string;
+  description?: string;
+  prices: Partial<Record<ItemVariant, number>>;
+  singlePrice?: number;
   available: boolean;
   order: number;
   image?: string;
   popular?: boolean;
+  /** Track stock quantity. undefined = unlimited */
+  stock?: number;
+  sku?: string;
 }
 
 export interface Addon {
   id: string;
-  name_th: string;
-  name_en: string;
+  name: string;
+  name_secondary?: string;
   price: number;
   available: boolean;
 }
 
 export interface SizeOption {
-  id: DrinkSize;
-  name_th: string;
-  name_en: string;
+  id: ItemSize;
+  name: string;
   price: number;
 }
 
 export interface CartItem {
-  id: string; // unique cart item id
+  id: string;
   menuItem: MenuItem;
-  temp: DrinkTemp;
-  size: DrinkSize;
+  variant: ItemVariant;
+  size: ItemSize;
   addons: Addon[];
   quantity: number;
   unitPrice: number;
@@ -67,6 +71,7 @@ export interface Order {
   userPhone?: string;
   customerNote?: string;
   stripeSessionId?: string;
+  promptpayRef?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -78,4 +83,17 @@ export interface DailySales {
   itemsSold: Record<string, number>;
 }
 
-export type Language = 'th' | 'en';
+export interface InventoryItem {
+  menuItemId: string;
+  sku: string;
+  name: string;
+  currentStock: number;
+  lowStockThreshold: number;
+  lastRestockedAt?: Date;
+}
+
+export interface NotificationConfig {
+  channel: NotificationChannel;
+  enabled: boolean;
+  recipientId?: string;
+}

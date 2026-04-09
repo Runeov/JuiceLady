@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { Loader2, TrendingUp, DollarSign, ShoppingBag, BarChart3 } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, formatPrice, exportToCSV } from '@/lib/utils';
 
 interface Order {
   id: string;
@@ -67,7 +67,7 @@ export default function AdminAnalyticsPage() {
     const itemCounts: Record<string, { name: string; count: number; revenue: number }> = {};
     completed.forEach((order) => {
       order.items?.forEach((item: any) => {
-        const key = item.name_en;
+        const key = item.name;
         if (!itemCounts[key]) {
           itemCounts[key] = { name: key, count: 0, revenue: 0 };
         }
@@ -104,7 +104,7 @@ export default function AdminAnalyticsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 text-cameron-600 animate-spin" />
+        <Loader2 className="w-8 h-8 text-brand-600 animate-spin" />
       </div>
     );
   }
@@ -131,6 +131,22 @@ export default function AdminAnalyticsPage() {
             </button>
           ))}
         </div>
+        <button
+          onClick={() => {
+            const csvData = filteredOrders.map((o) => ({
+              'Order ID': o.id.slice(0, 8),
+              Customer: '', // orders don't have customer name in this view
+              Total: o.total,
+              Status: o.orderStatus,
+              Payment: o.paymentMethod,
+              Date: o.createdAt ? new Date(o.createdAt).toLocaleString() : '',
+            }));
+            exportToCSV(csvData, `sales-report-${timeRange}`);
+          }}
+          className="px-3 py-1.5 rounded-lg text-xs font-medium bg-brand-700 text-white hover:bg-brand-800 transition-colors"
+        >
+          Export CSV
+        </button>
       </div>
 
       {/* Stats cards */}
@@ -138,7 +154,7 @@ export default function AdminAnalyticsPage() {
         {[
           {
             label: 'Revenue',
-            value: `฿${stats.revenue.toLocaleString()}`,
+            value: formatPrice(stats.revenue),
             icon: DollarSign,
             color: 'bg-green-50 text-green-600',
           },
@@ -150,7 +166,7 @@ export default function AdminAnalyticsPage() {
           },
           {
             label: 'Avg Order',
-            value: `฿${stats.avgOrder}`,
+            value: formatPrice(stats.avgOrder),
             icon: TrendingUp,
             color: 'bg-purple-50 text-purple-600',
           },
@@ -183,11 +199,11 @@ export default function AdminAnalyticsPage() {
               {Object.entries(stats.hourlyRevenue).map(([hour, revenue]) => (
                 <div key={hour} className="flex-1 flex flex-col items-center gap-1">
                   <div
-                    className="w-full bg-cameron-200 hover:bg-cameron-400 rounded-t-md transition-colors"
+                    className="w-full bg-brand-200 hover:bg-brand-400 rounded-t-md transition-colors"
                     style={{
                       height: `${Math.max((revenue / maxHourlyRevenue) * 100, 2)}%`,
                     }}
-                    title={`${hour}:00 — ฿${revenue}`}
+                    title={`${hour}:00 — ${formatPrice(revenue)}`}
                   />
                   <span className="text-[9px] text-gray-400">{hour}</span>
                 </div>
@@ -202,7 +218,7 @@ export default function AdminAnalyticsPage() {
           <div className="space-y-3">
             <div>
               <div className="flex justify-between text-sm mb-1">
-                <span className="text-gray-600">💵 Cash</span>
+                <span className="text-gray-600">Cash</span>
                 <span className="font-medium">{stats.cashOrders} orders</span>
               </div>
               <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
@@ -216,7 +232,7 @@ export default function AdminAnalyticsPage() {
             </div>
             <div>
               <div className="flex justify-between text-sm mb-1">
-                <span className="text-gray-600">💳 Card (Stripe)</span>
+                <span className="text-gray-600">Card (Stripe)</span>
                 <span className="font-medium">{stats.cardOrders} orders</span>
               </div>
               <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
@@ -263,8 +279,8 @@ export default function AdminAnalyticsPage() {
                   <span className="text-xs text-gray-500">
                     {item.count} sold
                   </span>
-                  <span className="text-sm font-bold text-cameron-700">
-                    ฿{item.revenue.toLocaleString()}
+                  <span className="text-sm font-bold text-brand-700">
+                    {formatPrice(item.revenue)}
                   </span>
                 </div>
               ))}

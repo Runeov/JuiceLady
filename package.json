@@ -1,6 +1,6 @@
 {
-  "name": "cameron-natural",
-  "version": "1.0.0",
+  "name": "universal-order-system",
+  "version": "2.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
